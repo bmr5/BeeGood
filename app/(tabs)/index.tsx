@@ -1,183 +1,188 @@
 
-import React, { useState } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, View } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View, FlatList } from 'react-native';
+import { BeeThemedView } from '@/components/BeeThemedView';
+import { BeeThemedText } from '@/components/BeeThemedText';
+import { useState } from 'react';
+import Colors from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { Pressable } from 'react-native';
 
-// Temporary deed data until we integrate with backend
-const SAMPLE_DEEDS = [
+// Mock data for deeds
+const MOCK_DEEDS = [
   {
     id: '1',
-    title: 'Send a thank you message to someone who helped you',
-    category: 'Friendship',
+    title: 'Compliment someone today',
+    category: 'compassion',
     difficulty: 'Easy',
-    color: '#4CD964', // Green
+    completed: false,
   },
   {
     id: '2',
-    title: 'Pick up 3 pieces of litter in your neighborhood',
-    category: 'Environmental Care',
+    title: 'Read a book for 15 minutes',
+    category: 'personalGrowth',
     difficulty: 'Medium',
-    color: '#5AC8FA', // Blue
+    completed: false,
   },
   {
     id: '3',
-    title: 'Volunteer for 1 hour at a local organization',
-    category: 'Community Impact',
+    title: 'Pick up 3 pieces of litter',
+    category: 'environmentalCare',
+    difficulty: 'Easy',
+    completed: false,
+  },
+  {
+    id: '4',
+    title: 'Call a family member',
+    category: 'familyBonds',
+    difficulty: 'Medium',
+    completed: false,
+  },
+  {
+    id: '5',
+    title: 'Donate to a local cause',
+    category: 'communityImpact',
     difficulty: 'Challenge',
-    color: '#FF9500', // Orange
+    completed: false,
   },
 ];
 
-const DifficultyBadge = ({ difficulty }) => {
-  const getColor = () => {
-    switch (difficulty) {
-      case 'Easy': return '#4CD964';
-      case 'Medium': return '#FFCC00';
-      case 'Challenge': return '#FF3B30';
-      default: return '#4CD964';
+export default function DailyDeedsScreen() {
+  const colorScheme = useColorScheme();
+  const [deeds, setDeeds] = useState(MOCK_DEEDS);
+
+  // Toggle completion status for a deed
+  const toggleDeedCompletion = (id: string) => {
+    setDeeds(deeds.map(deed => 
+      deed.id === id ? {...deed, completed: !deed.completed} : deed
+    ));
+  };
+
+  // Get category color
+  const getCategoryColor = (category: string) => {
+    return Colors[colorScheme ?? 'light'][category as keyof typeof Colors.light] || '#F6B93B';
+  };
+
+  // Get difficulty icon
+  const getDifficultyIcon = (difficulty: string) => {
+    switch(difficulty) {
+      case 'Easy': return 'seedling';
+      case 'Medium': return 'tree';
+      case 'Challenge': return 'mountain';
+      default: return 'circle';
     }
   };
 
   return (
-    <View style={[styles.badge, { backgroundColor: getColor() }]}>
-      <ThemedText style={styles.badgeText}>{difficulty}</ThemedText>
-    </View>
-  );
-};
-
-const DeedCard = ({ deed, onComplete }) => {
-  return (
-    <ThemedView style={styles.deedCard}>
-      <View style={[styles.categoryIndicator, { backgroundColor: deed.color }]} />
-      <View style={styles.deedContent}>
-        <View style={styles.deedHeader}>
-          <ThemedText style={styles.category}>{deed.category}</ThemedText>
-          <DifficultyBadge difficulty={deed.difficulty} />
-        </View>
-        <ThemedText style={styles.deedTitle}>{deed.title}</ThemedText>
-        <TouchableOpacity style={styles.completeButton} onPress={() => onComplete(deed.id)}>
-          <ThemedText style={styles.completeButtonText}>Mark as Complete</ThemedText>
-        </TouchableOpacity>
+    <BeeThemedView style={styles.container}>
+      <View style={styles.header}>
+        <BeeThemedText type="title">Daily Good Deeds</BeeThemedText>
+        <BeeThemedText type="subtitle" style={styles.subtitle}>
+          Complete these to grow your bee!
+        </BeeThemedText>
       </View>
-    </ThemedView>
-  );
-};
-
-export default function TodayScreen() {
-  const [completedDeeds, setCompletedDeeds] = useState<string[]>([]);
-
-  const handleComplete = (id: string) => {
-    setCompletedDeeds([...completedDeeds, id]);
-    // In a real app, we would send this to the backend
-  };
-
-  return (
-    <ScrollView style={styles.container}>
-      <ThemedView style={styles.header}>
-        <ThemedText style={styles.title}>Today's Good Deeds</ThemedText>
-        <ThemedText style={styles.subtitle}>Complete these to improve your bee!</ThemedText>
-      </ThemedView>
-
-      <ThemedView style={styles.deedsList}>
-        {SAMPLE_DEEDS.map((deed) => (
-          <DeedCard 
-            key={deed.id} 
-            deed={deed} 
-            onComplete={handleComplete} 
-          />
-        ))}
-      </ThemedView>
-
-      {completedDeeds.length > 0 && (
-        <ThemedView style={styles.completedContainer}>
-          <ThemedText style={styles.completedTitle}>
-            <Ionicons name="checkmark-circle" size={20} color="#4CD964" /> 
-            {' '}You've completed {completedDeeds.length} good deed{completedDeeds.length > 1 ? 's' : ''} today!
-          </ThemedText>
-        </ThemedView>
-      )}
-    </ScrollView>
+      
+      <FlatList
+        data={deeds}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContainer}
+        renderItem={({item}) => (
+          <Pressable 
+            style={[
+              styles.deedCard,
+              {backgroundColor: Colors[colorScheme ?? 'light'].cardBackground}
+            ]}
+            onPress={() => toggleDeedCompletion(item.id)}
+          >
+            <View style={styles.deedMain}>
+              <View style={[styles.categoryIndicator, { backgroundColor: getCategoryColor(item.category) }]} />
+              <View style={styles.deedContent}>
+                <BeeThemedText type="defaultSemiBold">{item.title}</BeeThemedText>
+                <View style={styles.deedMeta}>
+                  <FontAwesome5 
+                    name={getDifficultyIcon(item.difficulty)} 
+                    size={12} 
+                    color={Colors[colorScheme ?? 'light'].secondaryText} 
+                    style={styles.difficultyIcon}
+                  />
+                  <BeeThemedText type="secondary">{item.difficulty}</BeeThemedText>
+                </View>
+              </View>
+            </View>
+            <Pressable
+              style={[
+                styles.checkbox,
+                item.completed && { backgroundColor: Colors[colorScheme ?? 'light'].tint }
+              ]}
+              onPress={() => toggleDeedCompletion(item.id)}
+            >
+              {item.completed && (
+                <FontAwesome5 name="check" size={16} color="#FFFFFF" />
+              )}
+            </Pressable>
+          </Pressable>
+        )}
+      />
+    </BeeThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
   },
   header: {
-    padding: 16,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    marginTop: 60,
+    marginBottom: 24,
   },
   subtitle: {
-    fontSize: 16,
+    marginTop: 4,
     opacity: 0.8,
   },
-  deedsList: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+  listContainer: {
+    paddingBottom: 40,
   },
   deedCard: {
-    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 16,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.1)',
-  },
-  deedContent: {
     padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  deedMain: {
+    flexDirection: 'row',
+    flex: 1,
   },
   categoryIndicator: {
-    height: 8,
-    width: '100%',
+    width: 8,
+    borderRadius: 4,
+    marginRight: 12,
   },
-  deedHeader: {
+  deedContent: {
+    flex: 1,
+  },
+  deedMeta: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginTop: 4,
   },
-  category: {
-    fontSize: 14,
-    fontWeight: 'bold',
+  difficultyIcon: {
+    marginRight: 4,
   },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  deedTitle: {
-    fontSize: 18,
-    marginBottom: 16,
-  },
-  completeButton: {
-    backgroundColor: '#F6B93B',
-    padding: 12,
-    borderRadius: 8,
+  checkbox: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#F6B93B',
     alignItems: 'center',
-  },
-  completeButtonText: {
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  completedContainer: {
-    padding: 16,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  completedTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    justifyContent: 'center',
   },
 });

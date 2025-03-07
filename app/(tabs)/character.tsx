@@ -161,3 +161,166 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import { BeeThemedView } from '@/components/BeeThemedView';
+import { BeeThemedText } from '@/components/BeeThemedText';
+import Colors from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { FontAwesome5 } from '@expo/vector-icons';
+
+export default function CharacterScreen() {
+  const colorScheme = useColorScheme();
+  
+  return (
+    <BeeThemedView style={styles.container}>
+      <View style={styles.header}>
+        <BeeThemedText type="title">Your Bee</BeeThemedText>
+        <BeeThemedText type="subtitle" style={styles.subtitle}>
+          Level 2: Worker Bee
+        </BeeThemedText>
+      </View>
+      
+      <View style={styles.characterContainer}>
+        <Image 
+          source={require('@/assets/images/bee-icon.png')}
+          style={styles.characterImage}
+          resizeMode="contain"
+        />
+      </View>
+      
+      <View style={styles.statsContainer}>
+        <View style={[
+          styles.statsCard,
+          {backgroundColor: Colors[colorScheme ?? 'light'].cardBackground}
+        ]}>
+          <BeeThemedText type="defaultSemiBold" style={styles.statsTitle}>
+            Character Stats
+          </BeeThemedText>
+          
+          <View style={styles.statsGrid}>
+            <View style={styles.statItem}>
+              <FontAwesome5 
+                name="trophy" 
+                size={24} 
+                color={Colors[colorScheme ?? 'light'].tint} 
+              />
+              <BeeThemedText type="secondary" style={styles.statLabel}>Level</BeeThemedText>
+              <BeeThemedText style={styles.statValue}>2</BeeThemedText>
+            </View>
+            
+            <View style={styles.statItem}>
+              <FontAwesome5 
+                name="calendar-check" 
+                size={24} 
+                color={Colors[colorScheme ?? 'light'].tint} 
+              />
+              <BeeThemedText type="secondary" style={styles.statLabel}>Deeds Done</BeeThemedText>
+              <BeeThemedText style={styles.statValue}>17</BeeThemedText>
+            </View>
+            
+            <View style={styles.statItem}>
+              <FontAwesome5 
+                name="fire" 
+                size={24} 
+                color={Colors[colorScheme ?? 'light'].tint} 
+              />
+              <BeeThemedText type="secondary" style={styles.statLabel}>Streak</BeeThemedText>
+              <BeeThemedText style={styles.statValue}>5 days</BeeThemedText>
+            </View>
+            
+            <View style={styles.statItem}>
+              <FontAwesome5 
+                name="star" 
+                size={24} 
+                color={Colors[colorScheme ?? 'light'].tint} 
+              />
+              <BeeThemedText type="secondary" style={styles.statLabel}>XP to Level 3</BeeThemedText>
+              <BeeThemedText style={styles.statValue}>23 / 50</BeeThemedText>
+            </View>
+          </View>
+        </View>
+      </View>
+      
+      <TouchableOpacity 
+        style={[
+          styles.evolveButton,
+          {backgroundColor: Colors[colorScheme ?? 'light'].tint}
+        ]}
+      >
+        <FontAwesome5 name="arrow-up" size={16} color="#000000" />
+        <BeeThemedText style={styles.evolveButtonText} darkColor="#000000">
+          Needs 27 more XP to evolve
+        </BeeThemedText>
+      </TouchableOpacity>
+    </BeeThemedView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    marginTop: 60,
+    marginBottom: 24,
+  },
+  subtitle: {
+    marginTop: 4,
+    opacity: 0.8,
+  },
+  characterContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 200,
+    marginBottom: 24,
+  },
+  characterImage: {
+    width: 150,
+    height: 150,
+  },
+  statsContainer: {
+    marginBottom: 24,
+  },
+  statsCard: {
+    padding: 20,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  statsTitle: {
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  statItem: {
+    width: '48%',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  statLabel: {
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  statValue: {
+    fontWeight: '600',
+  },
+  evolveButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+  },
+  evolveButtonText: {
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+});

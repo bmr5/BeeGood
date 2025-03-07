@@ -1,15 +1,15 @@
 
 import { Tabs } from 'expo-router';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { Pressable } from 'react-native';
 import Colors from '@/constants/Colors';
-import { FontAwesome } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof FontAwesome5>['name'];
   color: string;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return <FontAwesome5 size={24} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
@@ -20,45 +20,40 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         tabBarStyle: {
-          backgroundColor: '#F6B93B',
-        },
-        tabBarLabelStyle: {
-          fontWeight: 'bold',
-        },
-        headerStyle: {
-          backgroundColor: '#F6B93B',
-        },
-        headerTitleStyle: {
-          fontWeight: 'bold',
-          color: '#000000',
-        },
+          height: 60,
+          paddingBottom: 5,
+        }
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Today',
-          tabBarIcon: ({ color }) => <Ionicons name="today-outline" size={24} color={color} />,
+          title: 'Daily Deeds',
+          tabBarIcon: ({ color }) => <TabBarIcon name="calendar-check" color={color} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
         name="stats"
         options={{
           title: 'Stats',
-          tabBarIcon: ({ color }) => <Ionicons name="stats-chart" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="chart-bar" color={color} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
         name="character"
         options={{
           title: 'My Bee',
-          tabBarIcon: ({ color }) => <Ionicons name="person" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="bug" color={color} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
         name="achievements"
         options={{
-          title: 'Achievements',
-          tabBarIcon: ({ color }) => <Ionicons name="trophy" size={24} color={color} />,
+          title: 'Badges',
+          tabBarIcon: ({ color }) => <TabBarIcon name="trophy" color={color} />,
+          headerShown: false,
         }}
       />
     </Tabs>

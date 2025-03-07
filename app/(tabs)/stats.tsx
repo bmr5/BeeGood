@@ -192,3 +192,183 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
 });
+import { StyleSheet, View, TouchableOpacity, ScrollView } from 'react-native';
+import { BeeThemedView } from '@/components/BeeThemedView';
+import { BeeThemedText } from '@/components/BeeThemedText';
+import Colors from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { useState } from 'react';
+
+// Mock stats data
+const INITIAL_STATS = {
+  personalGrowth: 65,
+  familyBonds: 42,
+  friendship: 78,
+  communityImpact: 31,
+  environmentalCare: 59,
+  compassion: 83,
+};
+
+const CATEGORY_ICONS = {
+  personalGrowth: 'brain',
+  familyBonds: 'home',
+  friendship: 'user-friends',
+  communityImpact: 'hands-helping',
+  environmentalCare: 'leaf',
+  compassion: 'heart',
+};
+
+export default function StatsScreen() {
+  const colorScheme = useColorScheme();
+  const [stats, setStats] = useState(INITIAL_STATS);
+  
+  // Calculate overall goodness score (average of all stats)
+  const overallScore = Math.round(
+    Object.values(stats).reduce((sum, val) => sum + val, 0) / Object.values(stats).length
+  );
+
+  // Get human readable category name
+  const getCategoryName = (key: string) => {
+    return key.replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase());
+  };
+
+  return (
+    <BeeThemedView style={styles.container}>
+      <View style={styles.header}>
+        <BeeThemedText type="title">Your Goodness Stats</BeeThemedText>
+      </View>
+      
+      <View style={[
+        styles.overallScoreCard, 
+        {backgroundColor: Colors[colorScheme ?? 'light'].tint}
+      ]}>
+        <BeeThemedText style={styles.overallScoreText} darkColor="#000000">
+          Overall Goodness
+        </BeeThemedText>
+        <View style={styles.overallScoreCircle}>
+          <BeeThemedText style={styles.overallScoreValue} darkColor="#000000">
+            {overallScore}
+          </BeeThemedText>
+        </View>
+        <TouchableOpacity style={styles.shareButton}>
+          <FontAwesome5 name="share-alt" size={20} color="#000000" />
+          <BeeThemedText style={styles.shareText} darkColor="#000000">Share</BeeThemedText>
+        </TouchableOpacity>
+      </View>
+      
+      <ScrollView style={styles.statsContainer}>
+        {Object.entries(stats).map(([category, value]) => (
+          <View key={category} style={styles.statItem}>
+            <View style={styles.statHeader}>
+              <View style={styles.categoryIconContainer}>
+                <FontAwesome5 
+                  name={CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || 'circle'} 
+                  size={18} 
+                  color="#FFFFFF" 
+                  style={styles.categoryIcon}
+                />
+              </View>
+              <BeeThemedText type="defaultSemiBold">
+                {getCategoryName(category)}
+              </BeeThemedText>
+              <BeeThemedText style={{marginLeft: 'auto'}}>
+                {value}/100
+              </BeeThemedText>
+            </View>
+            <View style={styles.progressBarContainer}>
+              <View 
+                style={[
+                  styles.progressBar, 
+                  {
+                    width: `${value}%`, 
+                    backgroundColor: Colors[colorScheme ?? 'light'][category as keyof typeof Colors.light]
+                  }
+                ]} 
+              />
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    </BeeThemedView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    marginTop: 60,
+    marginBottom: 24,
+  },
+  overallScoreCard: {
+    padding: 20,
+    borderRadius: 16,
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  overallScoreText: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  overallScoreCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  overallScoreValue: {
+    fontSize: 36,
+    fontWeight: 'bold',
+  },
+  shareButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  shareText: {
+    marginLeft: 8,
+    fontWeight: '600',
+  },
+  statsContainer: {
+    flex: 1,
+  },
+  statItem: {
+    marginBottom: 20,
+  },
+  statHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  categoryIconContainer: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#F6B93B',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  categoryIcon: {},
+  progressBarContainer: {
+    height: 10,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    borderRadius: 5,
+  },
+});

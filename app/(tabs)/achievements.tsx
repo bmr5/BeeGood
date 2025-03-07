@@ -217,3 +217,211 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
+import { StyleSheet, View, FlatList } from 'react-native';
+import { BeeThemedView } from '@/components/BeeThemedView';
+import { BeeThemedText } from '@/components/BeeThemedText';
+import Colors from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { FontAwesome5 } from '@expo/vector-icons';
+
+// Mock achievements data
+const ACHIEVEMENTS = [
+  {
+    id: '1',
+    title: 'First Steps',
+    description: 'Complete your first good deed',
+    icon: 'baby',
+    unlocked: true,
+  },
+  {
+    id: '2',
+    title: 'Three-Day Streak',
+    description: 'Complete deeds 3 days in a row',
+    icon: 'fire',
+    unlocked: true,
+  },
+  {
+    id: '3',
+    title: 'Eco Warrior',
+    description: 'Complete 5 environmental deeds',
+    icon: 'leaf',
+    unlocked: false,
+  },
+  {
+    id: '4',
+    title: 'Community Champion',
+    description: 'Complete 5 community impact deeds',
+    icon: 'users',
+    unlocked: false,
+  },
+  {
+    id: '5',
+    title: 'Seven-Day Streak',
+    description: 'Complete deeds 7 days in a row',
+    icon: 'fire-alt',
+    unlocked: false,
+  },
+  {
+    id: '6',
+    title: 'Friend Indeed',
+    description: 'Complete 5 friendship deeds',
+    icon: 'user-friends',
+    unlocked: true,
+  },
+  {
+    id: '7',
+    title: 'Family First',
+    description: 'Complete 5 family deeds',
+    icon: 'home',
+    unlocked: false,
+  },
+  {
+    id: '8',
+    title: 'Growth Mindset',
+    description: 'Complete 5 personal growth deeds',
+    icon: 'brain',
+    unlocked: false,
+  },
+  {
+    id: '9',
+    title: 'Compassionate Soul',
+    description: 'Complete 5 compassion deeds',
+    icon: 'heart',
+    unlocked: true,
+  },
+  {
+    id: '10',
+    title: 'Challenge Accepted',
+    description: 'Complete 3 challenge difficulty deeds',
+    icon: 'mountain',
+    unlocked: false,
+  },
+];
+
+export default function AchievementsScreen() {
+  const colorScheme = useColorScheme();
+  const unlockedCount = ACHIEVEMENTS.filter(a => a.unlocked).length;
+  
+  return (
+    <BeeThemedView style={styles.container}>
+      <View style={styles.header}>
+        <BeeThemedText type="title">Achievements</BeeThemedText>
+        <BeeThemedText type="subtitle" style={styles.subtitle}>
+          {unlockedCount} / {ACHIEVEMENTS.length} Unlocked
+        </BeeThemedText>
+      </View>
+      
+      <FlatList
+        data={ACHIEVEMENTS}
+        keyExtractor={(item) => item.id}
+        numColumns={2}
+        contentContainerStyle={styles.listContainer}
+        renderItem={({item}) => (
+          <View style={styles.achievementContainer}>
+            <View 
+              style={[
+                styles.achievementCard,
+                {
+                  backgroundColor: item.unlocked 
+                    ? Colors[colorScheme ?? 'light'].tint 
+                    : Colors[colorScheme ?? 'light'].cardBackground,
+                  opacity: item.unlocked ? 1 : 0.7,
+                }
+              ]}
+            >
+              <FontAwesome5 
+                name={item.icon} 
+                size={32} 
+                color={item.unlocked ? '#000000' : Colors[colorScheme ?? 'light'].text} 
+                style={styles.achievementIcon}
+              />
+              
+              <BeeThemedText 
+                type="defaultSemiBold"
+                style={[
+                  styles.achievementTitle,
+                  item.unlocked && styles.unlockedText
+                ]}
+                darkColor={item.unlocked ? '#000000' : undefined}
+              >
+                {item.title}
+              </BeeThemedText>
+              
+              <BeeThemedText 
+                type="secondary"
+                style={[
+                  styles.achievementDescription,
+                  item.unlocked && styles.unlockedText
+                ]}
+                darkColor={item.unlocked ? '#000000' : undefined}
+              >
+                {item.description}
+              </BeeThemedText>
+              
+              {!item.unlocked && (
+                <FontAwesome5 
+                  name="lock" 
+                  size={16} 
+                  color={Colors[colorScheme ?? 'light'].secondaryText} 
+                  style={styles.lockIcon}
+                />
+              )}
+            </View>
+          </View>
+        )}
+      />
+    </BeeThemedView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    marginTop: 60,
+    marginBottom: 24,
+  },
+  subtitle: {
+    marginTop: 4,
+    opacity: 0.8,
+  },
+  listContainer: {
+    paddingBottom: 40,
+  },
+  achievementContainer: {
+    width: '50%',
+    padding: 8,
+  },
+  achievementCard: {
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    minHeight: 160,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  achievementIcon: {
+    marginBottom: 12,
+  },
+  achievementTitle: {
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  achievementDescription: {
+    textAlign: 'center',
+    fontSize: 12,
+  },
+  unlockedText: {
+    color: '#000000',
+  },
+  lockIcon: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+  },
+});
