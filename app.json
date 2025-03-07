@@ -1,8 +1,7 @@
-
 {
   "expo": {
-    "name": "Bee Good",
-    "slug": "bee-good",
+    "name": "BeeGood",
+    "slug": "BeeGood",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/bee-icon.png",
@@ -11,21 +10,19 @@
     "splash": {
       "image": "./assets/images/bee-splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#F6B93B"
+      "backgroundColor": "#FFF8E1"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.beegood.app"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/bee-adaptive-icon.png",
-        "backgroundColor": "#F6B93B"
-      },
-      "package": "com.beegood.app"
+        "backgroundColor": "#FFF8E1"
+      }
     },
     "web": {
       "bundler": "metro",
