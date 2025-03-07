@@ -1,74 +1,183 @@
-import { Image, StyleSheet, Platform } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import React, { useState } from 'react';
+import { StyleSheet, ScrollView, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function HomeScreen() {
+// Temporary deed data until we integrate with backend
+const SAMPLE_DEEDS = [
+  {
+    id: '1',
+    title: 'Send a thank you message to someone who helped you',
+    category: 'Friendship',
+    difficulty: 'Easy',
+    color: '#4CD964', // Green
+  },
+  {
+    id: '2',
+    title: 'Pick up 3 pieces of litter in your neighborhood',
+    category: 'Environmental Care',
+    difficulty: 'Medium',
+    color: '#5AC8FA', // Blue
+  },
+  {
+    id: '3',
+    title: 'Volunteer for 1 hour at a local organization',
+    category: 'Community Impact',
+    difficulty: 'Challenge',
+    color: '#FF9500', // Orange
+  },
+];
+
+const DifficultyBadge = ({ difficulty }) => {
+  const getColor = () => {
+    switch (difficulty) {
+      case 'Easy': return '#4CD964';
+      case 'Medium': return '#FFCC00';
+      case 'Challenge': return '#FF3B30';
+      default: return '#4CD964';
+    }
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome to Expo on Replit!</ThemedText>
-        <HelloWave />
+    <View style={[styles.badge, { backgroundColor: getColor() }]}>
+      <ThemedText style={styles.badgeText}>{difficulty}</ThemedText>
+    </View>
+  );
+};
+
+const DeedCard = ({ deed, onComplete }) => {
+  return (
+    <ThemedView style={styles.deedCard}>
+      <View style={[styles.categoryIndicator, { backgroundColor: deed.color }]} />
+      <View style={styles.deedContent}>
+        <View style={styles.deedHeader}>
+          <ThemedText style={styles.category}>{deed.category}</ThemedText>
+          <DifficultyBadge difficulty={deed.difficulty} />
+        </View>
+        <ThemedText style={styles.deedTitle}>{deed.title}</ThemedText>
+        <TouchableOpacity style={styles.completeButton} onPress={() => onComplete(deed.id)}>
+          <ThemedText style={styles.completeButtonText}>Mark as Complete</ThemedText>
+        </TouchableOpacity>
+      </View>
+    </ThemedView>
+  );
+};
+
+export default function TodayScreen() {
+  const [completedDeeds, setCompletedDeeds] = useState<string[]>([]);
+
+  const handleComplete = (id: string) => {
+    setCompletedDeeds([...completedDeeds, id]);
+    // In a real app, we would send this to the backend
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <ThemedView style={styles.header}>
+        <ThemedText style={styles.title}>Today's Good Deeds</ThemedText>
+        <ThemedText style={styles.subtitle}>Complete these to improve your bee!</ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
+
+      <ThemedView style={styles.deedsList}>
+        {SAMPLE_DEEDS.map((deed) => (
+          <DeedCard 
+            key={deed.id} 
+            deed={deed} 
+            onComplete={handleComplete} 
+          />
+        ))}
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+
+      {completedDeeds.length > 0 && (
+        <ThemedView style={styles.completedContainer}>
+          <ThemedText style={styles.completedTitle}>
+            <Ionicons name="checkmark-circle" size={20} color="#4CD964" /> 
+            {' '}You've completed {completedDeeds.length} good deed{completedDeeds.length > 1 ? 's' : ''} today!
+          </ThemedText>
+        </ThemedView>
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
+  header: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  subtitle: {
+    fontSize: 16,
+    opacity: 0.8,
+  },
+  deedsList: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  deedCard: {
+    borderRadius: 16,
+    marginBottom: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  deedContent: {
+    padding: 16,
+  },
+  categoryIndicator: {
+    height: 8,
+    width: '100%',
+  },
+  deedHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  category: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  deedTitle: {
+    fontSize: 18,
+    marginBottom: 16,
+  },
+  completeButton: {
+    backgroundColor: '#F6B93B',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  completeButtonText: {
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  completedContainer: {
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  completedTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
