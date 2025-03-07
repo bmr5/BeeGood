@@ -1,8 +1,9 @@
-
 import React, { useState } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { StyleSheet, View, Image, TouchableOpacity, ScrollView, useColorScheme } from 'react-native';
+import { BeeThemedText } from '@/components/BeeThemedText';
+import { BeeThemedView } from '@/components/BeeThemedView';
+import Colors from '@/constants/Colors';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 // Sample bee character stages
 const BEE_STAGES = [
@@ -30,61 +31,103 @@ const BEE_STAGES = [
 ];
 
 export default function CharacterScreen() {
+  const colorScheme = useColorScheme();
   const [completedDeeds, setCompletedDeeds] = useState(12); // Example value
-  
+
   // Determine current bee stage
   const currentStage = BEE_STAGES.reduce((prev, current) => {
     return (completedDeeds >= current.requiredDeeds) ? current : prev;
   });
-  
+
   // Find next stage if there is one
   const currentIndex = BEE_STAGES.findIndex(stage => stage.id === currentStage.id);
   const nextStage = currentIndex < BEE_STAGES.length - 1 ? BEE_STAGES[currentIndex + 1] : null;
-  
+
   // Calculate progress to next stage
   const progressToNext = nextStage 
     ? Math.min(100, ((completedDeeds - currentStage.requiredDeeds) / (nextStage.requiredDeeds - currentStage.requiredDeeds)) * 100)
     : 100;
 
   return (
-    <View style={styles.container}>
-      <ThemedView style={styles.characterContainer}>
+    <BeeThemedView style={styles.container}>
+      <View style={styles.header}>
+        <BeeThemedText type="title">Your Bee</BeeThemedText>
+        <BeeThemedText type="subtitle" style={styles.subtitle}>
+          {currentStage.name}
+        </BeeThemedText>
+      </View>
+
+      <View style={styles.characterContainer}>
         <View style={styles.beeBubble}>
-          <ThemedText style={styles.beeEmoji}>{currentStage.imagePlaceholder}</ThemedText>
+          <BeeThemedText style={styles.beeEmoji}>{currentStage.imagePlaceholder}</BeeThemedText>
         </View>
-        
-        <ThemedText style={styles.beeName}>{currentStage.name}</ThemedText>
-        <ThemedText style={styles.beeDescription}>{currentStage.description}</ThemedText>
-        
+
+        <BeeThemedText type="defaultSemiBold">{currentStage.name}</BeeThemedText>
+        <BeeThemedText type="secondary" style={styles.beeDescription}>{currentStage.description}</BeeThemedText>
+
         {nextStage && (
-          <ThemedView style={styles.progressContainer}>
+          <View style={styles.progressContainer}>
             <View style={styles.progressBar}>
               <View style={[styles.progressFill, { width: `${progressToNext}%` }]} />
             </View>
-            <ThemedText style={styles.progressText}>
+            <BeeThemedText type="secondary" style={styles.progressText}>
               {completedDeeds} / {nextStage.requiredDeeds} deeds to evolve
-            </ThemedText>
-          </ThemedView>
+            </BeeThemedText>
+          </View>
         )}
-      </ThemedView>
-      
-      <ThemedView style={styles.statsContainer}>
-        <View style={styles.statItem}>
-          <ThemedText style={styles.statValue}>{completedDeeds}</ThemedText>
-          <ThemedText style={styles.statLabel}>Total Good Deeds</ThemedText>
+      </View>
+
+      <View style={[
+        styles.statsCard,
+        {backgroundColor: Colors[colorScheme ?? 'light'].cardBackground}
+      ]}>
+        <BeeThemedText type="defaultSemiBold" style={styles.statsTitle}>
+          Character Stats
+        </BeeThemedText>
+
+        <View style={styles.statsGrid}>
+          <View style={styles.statItem}>
+            <FontAwesome5 
+              name="trophy" 
+              size={24} 
+              color={Colors[colorScheme ?? 'light'].tint} 
+            />
+            <BeeThemedText type="secondary" style={styles.statLabel}>Level</BeeThemedText>
+            <BeeThemedText style={styles.statValue}>2</BeeThemedText>
+          </View>
+
+          <View style={styles.statItem}>
+            <FontAwesome5 
+              name="calendar-check" 
+              size={24} 
+              color={Colors[colorScheme ?? 'light'].tint} 
+            />
+            <BeeThemedText type="secondary" style={styles.statLabel}>Deeds</BeeThemedText>
+            <BeeThemedText style={styles.statValue}>{completedDeeds}</BeeThemedText>
+          </View>
+
+          <View style={styles.statItem}>
+            <FontAwesome5 
+              name="fire" 
+              size={24} 
+              color={Colors[colorScheme ?? 'light'].tint} 
+            />
+            <BeeThemedText type="secondary" style={styles.statLabel}>Day Streak</BeeThemedText>
+            <BeeThemedText style={styles.statValue}>3</BeeThemedText>
+          </View>
+
+          <View style={styles.statItem}>
+            <FontAwesome5 
+              name="medal" 
+              size={24} 
+              color={Colors[colorScheme ?? 'light'].tint} 
+            />
+            <BeeThemedText type="secondary" style={styles.statLabel}>Achievements</BeeThemedText>
+            <BeeThemedText style={styles.statValue}>6</BeeThemedText>
+          </View>
         </View>
-        
-        <View style={styles.statItem}>
-          <ThemedText style={styles.statValue}>3</ThemedText>
-          <ThemedText style={styles.statLabel}>Day Streak</ThemedText>
-        </View>
-        
-        <View style={styles.statItem}>
-          <ThemedText style={styles.statValue}>6</ThemedText>
-          <ThemedText style={styles.statLabel}>Achievements</ThemedText>
-        </View>
-      </ThemedView>
-    </View>
+      </View>
+    </BeeThemedView>
   );
 }
 
@@ -92,6 +135,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  header: {
+    marginTop: 60,
+    marginBottom: 24,
+  },
+  subtitle: {
+    marginTop: 4,
+    opacity: 0.8,
   },
   characterContainer: {
     alignItems: 'center',
@@ -113,20 +164,15 @@ const styles = StyleSheet.create({
   beeEmoji: {
     fontSize: 80,
   },
-  beeName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
   beeDescription: {
-    fontSize: 16,
     textAlign: 'center',
-    marginBottom: 16,
+    marginVertical: 8,
     paddingHorizontal: 16,
   },
   progressContainer: {
     width: '100%',
     alignItems: 'center',
+    marginTop: 12,
   },
   progressBar: {
     width: '80%',
@@ -143,144 +189,6 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 14,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 24,
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#F6B93B',
-  },
-  statLabel: {
-    fontSize: 14,
-  },
-});
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
-import { BeeThemedView } from '@/components/BeeThemedView';
-import { BeeThemedText } from '@/components/BeeThemedText';
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { FontAwesome5 } from '@expo/vector-icons';
-
-export default function CharacterScreen() {
-  const colorScheme = useColorScheme();
-  
-  return (
-    <BeeThemedView style={styles.container}>
-      <View style={styles.header}>
-        <BeeThemedText type="title">Your Bee</BeeThemedText>
-        <BeeThemedText type="subtitle" style={styles.subtitle}>
-          Level 2: Worker Bee
-        </BeeThemedText>
-      </View>
-      
-      <View style={styles.characterContainer}>
-        <Image 
-          source={require('@/assets/images/bee-icon.png')}
-          style={styles.characterImage}
-          resizeMode="contain"
-        />
-      </View>
-      
-      <View style={styles.statsContainer}>
-        <View style={[
-          styles.statsCard,
-          {backgroundColor: Colors[colorScheme ?? 'light'].cardBackground}
-        ]}>
-          <BeeThemedText type="defaultSemiBold" style={styles.statsTitle}>
-            Character Stats
-          </BeeThemedText>
-          
-          <View style={styles.statsGrid}>
-            <View style={styles.statItem}>
-              <FontAwesome5 
-                name="trophy" 
-                size={24} 
-                color={Colors[colorScheme ?? 'light'].tint} 
-              />
-              <BeeThemedText type="secondary" style={styles.statLabel}>Level</BeeThemedText>
-              <BeeThemedText style={styles.statValue}>2</BeeThemedText>
-            </View>
-            
-            <View style={styles.statItem}>
-              <FontAwesome5 
-                name="calendar-check" 
-                size={24} 
-                color={Colors[colorScheme ?? 'light'].tint} 
-              />
-              <BeeThemedText type="secondary" style={styles.statLabel}>Deeds Done</BeeThemedText>
-              <BeeThemedText style={styles.statValue}>17</BeeThemedText>
-            </View>
-            
-            <View style={styles.statItem}>
-              <FontAwesome5 
-                name="fire" 
-                size={24} 
-                color={Colors[colorScheme ?? 'light'].tint} 
-              />
-              <BeeThemedText type="secondary" style={styles.statLabel}>Streak</BeeThemedText>
-              <BeeThemedText style={styles.statValue}>5 days</BeeThemedText>
-            </View>
-            
-            <View style={styles.statItem}>
-              <FontAwesome5 
-                name="star" 
-                size={24} 
-                color={Colors[colorScheme ?? 'light'].tint} 
-              />
-              <BeeThemedText type="secondary" style={styles.statLabel}>XP to Level 3</BeeThemedText>
-              <BeeThemedText style={styles.statValue}>23 / 50</BeeThemedText>
-            </View>
-          </View>
-        </View>
-      </View>
-      
-      <TouchableOpacity 
-        style={[
-          styles.evolveButton,
-          {backgroundColor: Colors[colorScheme ?? 'light'].tint}
-        ]}
-      >
-        <FontAwesome5 name="arrow-up" size={16} color="#000000" />
-        <BeeThemedText style={styles.evolveButtonText} darkColor="#000000">
-          Needs 27 more XP to evolve
-        </BeeThemedText>
-      </TouchableOpacity>
-    </BeeThemedView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  header: {
-    marginTop: 60,
-    marginBottom: 24,
-  },
-  subtitle: {
-    marginTop: 4,
-    opacity: 0.8,
-  },
-  characterContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 200,
-    marginBottom: 24,
-  },
-  characterImage: {
-    width: 150,
-    height: 150,
-  },
-  statsContainer: {
-    marginBottom: 24,
   },
   statsCard: {
     padding: 20,
@@ -311,16 +219,5 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontWeight: '600',
-  },
-  evolveButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
-  },
-  evolveButtonText: {
-    fontWeight: '600',
-    marginLeft: 8,
   },
 });
