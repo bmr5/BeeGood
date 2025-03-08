@@ -18,14 +18,14 @@ export const Colors = {
     compassion: '#DFC0EB', // Lavender
   },
   dark: {
-    text: '#FFFFFF', // White text for dark mode
+    text: '#333333', // Dark gray text for better contrast on light backgrounds
     background: '#FFF8E1', // Very light cream/yellow background
-    tint: '#FFD166', // Same yellow tint
-    tabIconDefault: '#CCCCCC', // Light gray for inactive tabs
-    tabIconSelected: '#FFD166', // Yellow for selected tabs
-    secondaryText: '#D0D0D0', // Light gray for secondary text
+    tint: '#F9A825', // Slightly darker yellow tint
+    tabIconDefault: '#999999', // Medium gray for inactive tabs
+    tabIconSelected: '#F9A825', // Matching tint color for selected tabs
+    secondaryText: '#666666', // Darker gray for secondary text
     borderColor: '#FFE082', // Light yellow borders
-    cardBackground: '#FFF8E1', // Light cream/yellow card background
+    cardBackground: '#FFFDF7', // Very light cream card background
     // Category colors (same as light mode for consistency)
     personalGrowth: '#FFAF87', // Soft peach
     familyBonds: '#A6D0FF', // Light blue

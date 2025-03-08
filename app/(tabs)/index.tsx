@@ -1,4 +1,3 @@
-
 import { StyleSheet, View } from 'react-native';
 import { BeeThemedView } from '@/components/BeeThemedView';
 import { BeeThemedText } from '@/components/BeeThemedText';
@@ -34,12 +33,12 @@ export default function DailyDeedsScreen() {
   return (
     <BeeThemedView style={styles.container}>
       <View style={styles.header}>
-        <BeeThemedText type="title">Daily Good</BeeThemedText>
-        <BeeThemedText type="subtitle" style={styles.subtitle}>
+        <BeeThemedText type="title" style={{color: '#333'}}>Daily Good</BeeThemedText>
+        <BeeThemedText type="subtitle" style={[styles.subtitle, {color: '#555'}]}>
           Your little acts of kindness add up
         </BeeThemedText>
       </View>
-      
+
       {/* Streak Card */}
       <View 
         style={[
@@ -53,14 +52,14 @@ export default function DailyDeedsScreen() {
           color={Colors[colorScheme ?? 'light'].tint} 
         />
         <View style={styles.streakContent}>
-          <BeeThemedText type="defaultSemiBold" style={styles.streakValue}>{streak}</BeeThemedText>
-          <BeeThemedText type="secondary">Day Streak</BeeThemedText>
+          <BeeThemedText type="defaultSemiBold" style={[styles.streakValue, {color: '#333'}]}>{streak}</BeeThemedText>
+          <BeeThemedText type="secondary" style={{color: '#555'}}>Day Streak</BeeThemedText>
         </View>
       </View>
-      
+
       {/* Today's Deed Card */}
-      <BeeThemedText type="subtitle" style={styles.todaysLabel}>Today's Suggested Good Deed</BeeThemedText>
-      
+      <BeeThemedText type="subtitle" style={[styles.todaysLabel, {color: '#333'}]}>Today's Suggested Good Deed</BeeThemedText>
+
       <Pressable 
         style={[
           styles.deedCard,
@@ -71,8 +70,8 @@ export default function DailyDeedsScreen() {
         <View style={styles.deedMain}>
           <View style={[styles.categoryIndicator, { backgroundColor: getCategoryColor(deed.category) }]} />
           <View style={styles.deedContent}>
-            <BeeThemedText type="defaultSemiBold" style={styles.deedTitle}>{deed.title}</BeeThemedText>
-            <BeeThemedText type="secondary">
+            <BeeThemedText type="defaultSemiBold" style={[styles.deedTitle, {color: '#333'}]}>{deed.title}</BeeThemedText>
+            <BeeThemedText type="secondary" style={{color: '#555'}}>
               {deed.completed ? "Completed today" : "Tap to mark as complete"}
             </BeeThemedText>
           </View>
@@ -92,7 +91,7 @@ export default function DailyDeedsScreen() {
 
       {/* Additional content */}
       <View style={styles.inspiration}>
-        <BeeThemedText type="secondary" style={styles.inspirationText}>
+        <BeeThemedText type="secondary" style={[styles.inspirationText, {color: '#555'}]}>
           "The smallest act of kindness is worth more than the grandest intention."
         </BeeThemedText>
       </View>

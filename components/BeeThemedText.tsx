@@ -18,19 +18,36 @@ export function BeeThemedText(props: BeeThemedTextProps) {
   let fontStyles = {};
   switch (type) {
     case 'title':
-      fontStyles = { fontSize: 28, fontWeight: '700' as const };
+      fontStyles = { 
+        fontSize: 28, 
+        fontWeight: '700' as const,
+        color: '#333333' // Ensure dark text for titles
+      };
       break;
     case 'subtitle':
-      fontStyles = { fontSize: 20, fontWeight: '600' as const };
+      fontStyles = { 
+        fontSize: 20, 
+        fontWeight: '600' as const,
+        color: '#333333' // Ensure dark text for subtitles
+      };
       break;
     case 'defaultSemiBold':
-      fontStyles = { fontSize: 16, fontWeight: '600' as const };
+      fontStyles = { 
+        fontSize: 16, 
+        fontWeight: '600' as const 
+      };
       break;
     case 'secondary':
-      fontStyles = { fontSize: 14, color: useThemeColor({}, 'secondaryText') };
+      fontStyles = { 
+        fontSize: 14, 
+        color: useThemeColor({}, 'secondaryText')
+      };
       break;
     case 'link':
-      fontStyles = { color: useThemeColor({}, 'tint'), textDecorationLine: 'underline' as const };
+      fontStyles = { 
+        color: '#E6A40B', // Slightly darker tint for better visibility
+        textDecorationLine: 'underline' as const 
+      };
       break;
     default:
       fontStyles = { fontSize: 16 };
