@@ -295,6 +295,23 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
     zIndex: 100,
   }));
 
+  // Create animated styles for wing flapping
+  const wingAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: wingPhase.value > 0.5 ? 1 : 0,
+  }));
+
+  const wing2AnimatedStyle = useAnimatedStyle(() => ({
+    opacity: wingPhase.value <= 0.5 ? 1 : 0,
+  }));
+
+  const wing3AnimatedStyle = useAnimatedStyle(() => ({
+    opacity: wing2Phase.value > 0.5 ? 1 : 0,
+  }));
+
+  const wing4AnimatedStyle = useAnimatedStyle(() => ({
+    opacity: wing2Phase.value <= 0.5 ? 1 : 0,
+  }));
+
   return (
     <View style={[styles.container, { height }]}>
       {/* Render flower bed stretching across the component */}
@@ -326,28 +343,34 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
 
       {/* Render first bee */}
       <Animated.View style={beeAnimatedStyle}>
-        <AnimatedImage
-          source={
-            wingPhase.value > 0.5
-              ? require("../assets/images/bee-wings-up.png")
-              : require("../assets/images/bee-wings-down.png")
-          }
-          style={styles.bee}
-          resizeMode="contain"
-        />
+        <View style={styles.beeContainer}>
+          <AnimatedImage
+            source={require("../assets/images/bee-wings-up.png")}
+            style={[styles.bee, wingAnimatedStyle]}
+            resizeMode="contain"
+          />
+          <AnimatedImage
+            source={require("../assets/images/bee-wings-down.png")}
+            style={[styles.bee, wing2AnimatedStyle]}
+            resizeMode="contain"
+          />
+        </View>
       </Animated.View>
 
       {/* Render second bee */}
       <Animated.View style={bee2AnimatedStyle}>
-        <AnimatedImage
-          source={
-            wing2Phase.value > 0.5
-              ? require("../assets/images/bee-wings-up.png")
-              : require("../assets/images/bee-wings-down.png")
-          }
-          style={styles.bee}
-          resizeMode="contain"
-        />
+        <View style={styles.beeContainer}>
+          <AnimatedImage
+            source={require("../assets/images/bee-wings-up.png")}
+            style={[styles.bee, wing3AnimatedStyle]}
+            resizeMode="contain"
+          />
+          <AnimatedImage
+            source={require("../assets/images/bee-wings-down.png")}
+            style={[styles.bee, wing4AnimatedStyle]}
+            resizeMode="contain"
+          />
+        </View>
       </Animated.View>
     </View>
   );
@@ -366,6 +389,11 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   bee: {
+    width: 50,
+    height: 50,
+    position: "absolute",
+  },
+  beeContainer: {
     width: 50,
     height: 50,
   },
