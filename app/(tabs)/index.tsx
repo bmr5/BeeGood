@@ -11,6 +11,7 @@ import { useState } from "react";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { FontAwesome5 } from "@expo/vector-icons";
+import BeeGardenAnimation from "@/components/BeeGardenAnimation";
 
 // Mock data for good deed
 const TODAYS_DEED = {
@@ -39,7 +40,7 @@ export default function DailyDeedsScreen() {
   };
 
   return (
-    <BeeThemedView style={styles.container}>
+    <BeeThemedView style={styles.outerContainer}>
       <SafeAreaView style={styles.container}>
         {/* Header with Crown and Streak */}
         <View style={styles.header}>
@@ -97,7 +98,20 @@ export default function DailyDeedsScreen() {
             </View>
           </View>
         </View>
+      </SafeAreaView>
 
+      {/* Full-width container for bee animation - now positioned after the deed content */}
+      <View style={styles.beeAnimationWrapper}>
+        <BeeGardenAnimation
+          height={120}
+          speedFactor={deed.completed ? 2 : 1}
+          onBeeVisitFlower={() => {
+            // Optional: Add haptic feedback or sound effect when bee visits a flower
+          }}
+        />
+      </View>
+
+      <SafeAreaView style={styles.bottomContainer}>
         {/* Inspirational Quote */}
         <View style={styles.quoteContainer}>
           <BeeThemedText type="secondary" style={styles.quoteText}>
@@ -111,9 +125,22 @@ export default function DailyDeedsScreen() {
 }
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 16,
+    paddingBottom: 0, // Remove bottom padding to make room for bee animation
+  },
+  bottomContainer: {
+    padding: 16,
+    paddingTop: 0, // Remove top padding since it follows the bee animation
+  },
+  beeAnimationWrapper: {
+    width: "100%",
+    height: 120,
+    zIndex: 100,
   },
   header: {
     flexDirection: "row",
@@ -184,7 +211,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   quoteContainer: {
-    backgroundColor: "rgba(246, 185, 59, 0.05)",
+    backgroundColor: "transparent",
     padding: 24,
     borderRadius: 16,
     marginTop: "auto",
