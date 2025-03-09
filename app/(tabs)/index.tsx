@@ -12,6 +12,8 @@ import { useState } from "react";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import RandomFlyingBee from "@/components/RandomFlyingBee";
+import { router } from "expo-router";
+import BeeGardenAnimation from "@/components/BeeGardenAnimation";
 
 // Mock data for good deed
 const TODAYS_DEED = {
@@ -30,14 +32,20 @@ export default function DailyDeedsScreen() {
     setDeed({ ...deed, completed: !deed.completed });
   };
 
+  // Navigate to stats page
+  const goToStats = () => {
+    // You can replace this with the actual route to your stats page
+    router.push("/stats");
+  };
+
   return (
     <BeeThemedView style={styles.container}>
       <SafeAreaView style={styles.container}>
-        {/* Add the random flying bee */}
-        <RandomFlyingBee
+        {/* Comment out the random flying bee */}
+        {/* <RandomFlyingBee
           speedFactor={deed.completed ? 1.5 : 1}
           pauseDuration={3000}
-        />
+        /> */}
 
         {/* Absolute positioned hive */}
         <Image
@@ -48,11 +56,14 @@ export default function DailyDeedsScreen() {
 
         {/* Header with Streak only */}
         <View style={styles.header}>
-          <View style={styles.streakContainer}>
-            <BeeThemedText type="secondary" style={styles.streakText}>
-              ✨ {streak} day streak
+          <Pressable style={styles.streakContainer} onPress={goToStats}>
+            <BeeThemedText type="title" style={styles.streakNumber}>
+              {streak}
             </BeeThemedText>
-          </View>
+            <BeeThemedText type="secondary" style={styles.streakEmoji}>
+              ✨
+            </BeeThemedText>
+          </Pressable>
         </View>
 
         {/* Main Deed Content */}
@@ -99,11 +110,20 @@ export default function DailyDeedsScreen() {
         </View>
 
         {/* Inspirational Quote */}
-        <View style={styles.quoteContainer}>
+        {/* <View style={styles.quoteContainer}>
           <BeeThemedText type="secondary" style={styles.quoteText}>
             "The smallest act of kindness is worth more than the grandest
             intention."
           </BeeThemedText>
+        </View> */}
+
+        {/* Add the BeeGardenAnimation below the quote */}
+        <View style={styles.gardenContainer}>
+          <BeeGardenAnimation
+            height={120}
+            speedFactor={deed.completed ? 1.5 : 1}
+            onBeeVisitFlower={() => {}}
+          />
         </View>
       </SafeAreaView>
     </BeeThemedView>
@@ -127,9 +147,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  streakText: {
-    fontSize: 18,
-    opacity: 0.7,
+  streakNumber: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginRight: 8,
+  },
+  streakEmoji: {
+    fontSize: 24,
   },
   hiveIcon: {
     width: 100,
@@ -202,5 +226,9 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     fontSize: 16,
     lineHeight: 24,
+  },
+  gardenContainer: {
+    width: "100%",
+    marginBottom: 20,
   },
 });

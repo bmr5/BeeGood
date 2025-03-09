@@ -6,6 +6,7 @@ import Animated, {
   withTiming,
   withRepeat,
   withSequence,
+  withDelay,
   Easing,
   runOnJS,
 } from "react-native-reanimated";
@@ -26,17 +27,6 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
   // Get screen dimensions
   const screenWidth = Dimensions.get("window").width;
 
-  // Define garden boundaries
-  const gardenWidth = useSharedValue(screenWidth);
-  const gardenHeight = useSharedValue(height);
-
-  // Define flower positions with more spacing
-  const flowerPositions = [
-    { x: screenWidth * 0.3, y: height * 0.6 }, // Further left (changed from 0.4 to 0.3)
-    { x: screenWidth * 0.5, y: height * 0.7 }, // Center stays the same
-    { x: screenWidth * 0.7, y: height * 0.65 }, // Further right (changed from 0.6 to 0.7)
-  ];
-
   // Bee position and rotation
   const beePosition = {
     x: useSharedValue(screenWidth * 0.1),
@@ -48,7 +38,10 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
   // Wing flapping state
   const wingPhase = useSharedValue(0);
 
-  // Trail effect
+  // Movement state
+  const [shouldMove, setShouldMove] = useState(true);
+
+  // Trail effect state
   const [trailPositions, setTrailPositions] = useState<
     Array<{
       x: number;
@@ -57,22 +50,22 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
       scale: number;
     }>
   >([]);
-
-  // Add a state to track if the bee is at a flower
-  const isAtFlower = useSharedValue(false);
-  const currentFlowerIndex = useSharedValue(-1);
+  const [trailUpdateTrigger, setTrailUpdateTrigger] = useState(0);
 
   // Initialize wing flapping
   useEffect(() => {
-    // Continuous wing flapping
+    // Slower wing flapping - increased duration from 150ms to 300ms
     wingPhase.value = withRepeat(
-      withTiming(1, { duration: 150 / speedFactor, easing: Easing.linear }),
+      withTiming(1, { duration: 300 / speedFactor, easing: Easing.linear }),
       -1,
       true
     );
+  }, [speedFactor]);
 
-    // Set up trail effect
-    const trailInterval = setInterval(() => {
+  // Update trail positions
+  useEffect(() => {
+    // Update trail positions
+    const updateTrail = () => {
       setTrailPositions((prev) =>
         [
           {
@@ -90,171 +83,98 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
           .filter((p) => p.opacity > 0)
           .slice(0, 5)
       );
+
+      // Trigger next update
+      setTrailUpdateTrigger((prev) => prev + 1);
+    };
+
+    // Schedule next trail update
+    const timeoutId = setTimeout(() => {
+      updateTrail();
     }, 100);
 
-    return () => clearInterval(trailInterval);
-  }, [speedFactor]);
+    return () => clearTimeout(timeoutId);
+  }, [trailUpdateTrigger]);
 
-  // Create a natural flight path
+  // Create a simple random flight path
   useEffect(() => {
-    const visitFlowerCallback = () => {
-      if (onBeeVisitFlower) {
+    if (!shouldMove) return;
+
+    const moveToRandomPosition = () => {
+      // Set movement state to false to prevent multiple movements
+      setShouldMove(false);
+
+      // Trigger callback occasionally
+      if (Math.random() > 0.7 && onBeeVisitFlower) {
         onBeeVisitFlower();
       }
 
-      // Mark that we're at a flower
-      isAtFlower.value = true;
-
-      // Generate a random pause duration between 5 and 15 seconds
-      const pauseDuration = 5000 + Math.random() * 10000; // Between 5000ms and 15000ms
-
-      // After a random delay, allow moving to the next flower
-      beeScale.value = withTiming(1, { duration: pauseDuration }, () => {
-        // Only after the pause completes, we allow moving on
-        isAtFlower.value = false;
-        // Trigger the next movement
-        runOnJS(createFlightPath)();
-      });
-    };
-
-    const createFlightPath = () => {
-      // Don't start a new path if we're already at a flower
-      if (isAtFlower.value) return;
-
-      // Start from current position
+      // Current position
       const currentX = beePosition.x.value;
       const currentY = beePosition.y.value;
 
-      // Choose next flower (different from current)
-      let targetIndex;
-      do {
-        targetIndex = Math.floor(Math.random() * flowerPositions.length);
-      } while (
-        targetIndex === currentFlowerIndex.value &&
-        flowerPositions.length > 1
-      );
-
-      currentFlowerIndex.value = targetIndex;
-      const target = flowerPositions[targetIndex];
-
-      // Convert to actual coordinates
-      const targetX = target.x;
-      const targetY = target.y;
+      // Generate random target within the garden
+      // Keep the bee within the flower bed area (lower 60% of height)
+      const targetX = Math.random() * screenWidth;
+      const targetY = height * 0.3 + Math.random() * (height * 0.5);
 
       // Calculate flight duration based on distance
       const distance = Math.sqrt(
         Math.pow(targetX - currentX, 2) + Math.pow(targetY - currentY, 2)
       );
-      // Much slower movement - 80ms per pixel
-      const duration = (distance * 80) / speedFactor;
+      // Even slower movement - increased from 30ms to 45ms per pixel (50% slower)
+      const duration = (distance * 45) / speedFactor;
 
-      // Create multiple midpoints for a more random path
-      // We'll create 3 midpoints to make a more complex path
-      const midpoints = [
+      // Determine direction
+      const isMovingRight = targetX > currentX;
+      beeRotation.value = withTiming(isMovingRight ? -1 : 1, {
+        duration: 300,
+        easing: Easing.inOut(Easing.ease),
+      });
+
+      // Calculate pause duration - longer pauses
+      const pauseDuration = 1000 + Math.random() * 2000;
+
+      // Animate to the target
+      beePosition.x.value = withTiming(
+        targetX,
         {
-          x:
-            currentX +
-            (targetX - currentX) * 0.25 +
-            (Math.random() - 0.5) * distance * 0.4,
-          y:
-            currentY +
-            (targetY - currentY) * 0.25 +
-            (Math.random() - 0.5) * distance * 0.4,
-        },
-        {
-          x:
-            currentX +
-            (targetX - currentX) * 0.5 +
-            (Math.random() - 0.5) * distance * 0.4,
-          y:
-            currentY +
-            (targetY - currentY) * 0.5 +
-            (Math.random() - 0.5) * distance * 0.4,
-        },
-        {
-          x:
-            currentX +
-            (targetX - currentX) * 0.75 +
-            (Math.random() - 0.5) * distance * 0.4,
-          y:
-            currentY +
-            (targetY - currentY) * 0.75 +
-            (Math.random() - 0.5) * distance * 0.4,
-        },
-      ];
-
-      // Function to animate to the next point in sequence
-      const animateToPoint = (index: number) => {
-        if (index >= midpoints.length) {
-          // If we've gone through all midpoints, animate to the target
-          const isMovingRight = targetX > beePosition.x.value;
-          beeRotation.value = isMovingRight ? -1 : 1;
-
-          beePosition.x.value = withTiming(
-            targetX,
-            {
-              duration: duration / (midpoints.length + 1),
-              easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-            },
-            () => {
-              // When we reach the target, trigger callback
-              runOnJS(visitFlowerCallback)();
-            }
-          );
-
-          beePosition.y.value = withTiming(targetY, {
-            duration: duration / (midpoints.length + 1),
-            easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-          });
-
-          return;
-        }
-
-        // Get the next point
-        const nextPoint = midpoints[index];
-
-        // Determine direction for this segment
-        const isMovingRight = nextPoint.x > beePosition.x.value;
-        beeRotation.value = isMovingRight ? -1 : 1;
-
-        // Animate to the next midpoint
-        beePosition.x.value = withTiming(
-          nextPoint.x,
-          {
-            duration: duration / (midpoints.length + 1),
-            easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-          },
-          () => {
-            // When we reach this midpoint, move to the next one
-            runOnJS(animateToPoint)(index + 1);
-          }
-        );
-
-        beePosition.y.value = withTiming(nextPoint.y, {
-          duration: duration / (midpoints.length + 1),
+          duration: duration,
           easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-        });
-      };
+        },
+        () => {
+          // After reaching target, schedule the next movement after a delay
+          beePosition.x.value = withDelay(
+            pauseDuration,
+            withTiming(beePosition.x.value, { duration: 0 }, () => {
+              // Allow movement again
+              runOnJS(setShouldMove)(true);
+            })
+          );
+        }
+      );
 
-      // Start the animation sequence with the first midpoint
-      animateToPoint(0);
+      beePosition.y.value = withTiming(targetY, {
+        duration: duration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      });
 
       // Add slight bobbing motion
       beeScale.value = withSequence(
-        withTiming(1.1, { duration: duration * 0.1 }),
-        withTiming(1, { duration: duration * 0.1 })
+        withTiming(1.1, { duration: 300 }),
+        withTiming(1, { duration: 300 })
       );
     };
 
-    // Start the flight path
-    createFlightPath();
-  }, [speedFactor, onBeeVisitFlower]);
+    // Start the random movement
+    moveToRandomPosition();
+  }, [speedFactor, onBeeVisitFlower, shouldMove]);
 
   // Create animated styles
   const beeAnimatedStyle = useAnimatedStyle(() => ({
     position: "absolute",
-    left: beePosition.x.value - 30,
-    top: beePosition.y.value - 30,
+    left: beePosition.x.value - 25,
+    top: beePosition.y.value - 25,
     transform: [
       { scaleX: beeRotation.value }, // -1 flips horizontally, 1 keeps normal
       { scale: beeScale.value },
@@ -264,54 +184,12 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
 
   return (
     <View style={[styles.container, { height }]}>
-      {/* Render flowers clustered in the middle */}
-      <View
-        style={[
-          styles.flowerContainer,
-          {
-            left: flowerPositions[0].x - 30, // Adjusted for smaller size
-            top: flowerPositions[0].y - 30, // Adjusted for smaller size
-          },
-        ]}
-      >
-        <Image
-          source={require("../assets/images/flower.png")}
-          style={styles.flower}
-          resizeMode="contain"
-        />
-      </View>
-
-      <View
-        style={[
-          styles.flowerContainer,
-          {
-            left: flowerPositions[1].x - 30, // Adjusted for smaller size
-            top: flowerPositions[1].y - 30, // Adjusted for smaller size
-          },
-        ]}
-      >
-        <Image
-          source={require("../assets/images/flower.png")}
-          style={styles.flower}
-          resizeMode="contain"
-        />
-      </View>
-
-      <View
-        style={[
-          styles.flowerContainer,
-          {
-            left: flowerPositions[2].x - 30, // Adjusted for smaller size
-            top: flowerPositions[2].y - 30, // Adjusted for smaller size
-          },
-        ]}
-      >
-        <Image
-          source={require("../assets/images/flower.png")}
-          style={styles.flower}
-          resizeMode="contain"
-        />
-      </View>
+      {/* Render flower bed stretching across the component */}
+      <Image
+        source={require("../assets/images/flower-bed.png")}
+        style={styles.flowerBed}
+        resizeMode="stretch"
+      />
 
       {/* Render trail */}
       {trailPositions.map((pos, index) => (
@@ -351,18 +229,15 @@ const styles = StyleSheet.create({
     position: "relative",
     overflow: "hidden",
   },
-  flowerContainer: {
-    position: "absolute",
-    width: 60, // Reduced from 80 back to 60
-    height: 60, // Reduced from 80 back to 60
-  },
-  flower: {
+  flowerBed: {
     width: "100%",
-    height: "100%",
+    height: "60%",
+    position: "absolute",
+    bottom: 0,
   },
   bee: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
   },
   trailDot: {
     position: "absolute",
