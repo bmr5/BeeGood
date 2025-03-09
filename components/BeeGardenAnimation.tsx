@@ -45,7 +45,7 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
 
   // Wing flapping state for both bees
   const wingPhase = useSharedValue(0);
-  const wing2Phase = useSharedValue(0.5); // Start with offset phase for variety
+  const wing2Phase = useSharedValue(0);
 
   // Movement state for both bees
   const [shouldMove, setShouldMove] = useState(true);
@@ -65,20 +65,22 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
 
   // Initialize wing flapping
   useEffect(() => {
-    // Slower wing flapping - increased duration from 150ms to 300ms
+    // First bee wing animation - slowed down by 100%
+    wingPhase.value = 0;
     wingPhase.value = withRepeat(
-      withTiming(1, { duration: 300 / speedFactor, easing: Easing.linear }),
-      -1,
-      true
+      withTiming(1, { duration: 200 }), // increased from 100 to 200
+      -1, // infinite repeats
+      true // reverse
     );
 
-    // Second bee wings with slight offset
+    // Second bee wing animation - slowed down by 100%
+    wing2Phase.value = 0;
     wing2Phase.value = withRepeat(
-      withTiming(1, { duration: 320 / speedFactor, easing: Easing.linear }),
+      withTiming(1, { duration: 240 }), // increased from 120 to 240
       -1,
       true
     );
-  }, [speedFactor]);
+  }, []);
 
   // Update trail positions
   useEffect(() => {
