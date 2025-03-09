@@ -4,14 +4,14 @@ import {
   Pressable,
   Animated,
   SafeAreaView,
+  Image,
 } from "react-native";
 import { BeeThemedView } from "@/components/BeeThemedView";
 import { BeeThemedText } from "@/components/BeeThemedText";
 import { useState } from "react";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { FontAwesome5 } from "@expo/vector-icons";
-import BeeGardenAnimation from "@/components/BeeGardenAnimation";
+import RandomFlyingBee from "@/components/RandomFlyingBee";
 
 // Mock data for good deed
 const TODAYS_DEED = {
@@ -22,7 +22,6 @@ const TODAYS_DEED = {
 };
 
 export default function DailyDeedsScreen() {
-  const colorScheme = useColorScheme();
   const [deed, setDeed] = useState(TODAYS_DEED);
   const [streak, setStreak] = useState(3);
 
@@ -31,29 +30,29 @@ export default function DailyDeedsScreen() {
     setDeed({ ...deed, completed: !deed.completed });
   };
 
-  // Get category color
-  const getCategoryColor = (category: string) => {
-    return (
-      Colors[colorScheme ?? "light"][category as keyof typeof Colors.light] ||
-      "#F6B93B"
-    );
-  };
-
   return (
-    <BeeThemedView style={styles.outerContainer}>
+    <BeeThemedView style={styles.container}>
       <SafeAreaView style={styles.container}>
-        {/* Header with Crown and Streak */}
+        {/* Add the random flying bee */}
+        <RandomFlyingBee
+          speedFactor={deed.completed ? 1.5 : 1}
+          pauseDuration={3000}
+        />
+
+        {/* Absolute positioned hive */}
+        <Image
+          source={require("@/assets/images/hive.png")}
+          style={styles.hiveIcon}
+          resizeMode="contain"
+        />
+
+        {/* Header with Streak only */}
         <View style={styles.header}>
           <View style={styles.streakContainer}>
             <BeeThemedText type="secondary" style={styles.streakText}>
               ✨ {streak} day streak
             </BeeThemedText>
           </View>
-          <FontAwesome5
-            name="crown"
-            size={24}
-            color={Colors[colorScheme ?? "light"].tint}
-          />
         </View>
 
         {/* Main Deed Content */}
@@ -98,20 +97,7 @@ export default function DailyDeedsScreen() {
             </View>
           </View>
         </View>
-      </SafeAreaView>
 
-      {/* Full-width container for bee animation - now positioned after the deed content */}
-      <View style={styles.beeAnimationWrapper}>
-        <BeeGardenAnimation
-          height={120}
-          speedFactor={deed.completed ? 2 : 1}
-          onBeeVisitFlower={() => {
-            // Optional: Add haptic feedback or sound effect when bee visits a flower
-          }}
-        />
-      </View>
-
-      <SafeAreaView style={styles.bottomContainer}>
         {/* Inspirational Quote */}
         <View style={styles.quoteContainer}>
           <BeeThemedText type="secondary" style={styles.quoteText}>
@@ -125,26 +111,13 @@ export default function DailyDeedsScreen() {
 }
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    flex: 1,
-  },
   container: {
     flex: 1,
-    padding: 16,
-    paddingBottom: 0, // Remove bottom padding to make room for bee animation
-  },
-  bottomContainer: {
-    padding: 16,
-    paddingTop: 0, // Remove top padding since it follows the bee animation
-  },
-  beeAnimationWrapper: {
-    width: "100%",
-    height: 120,
-    zIndex: 100,
+    // padding: 16,
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "center",
     marginTop: 20,
     marginBottom: 40,
@@ -157,6 +130,14 @@ const styles = StyleSheet.create({
   streakText: {
     fontSize: 18,
     opacity: 0.7,
+  },
+  hiveIcon: {
+    width: 100,
+    height: 100,
+    position: "absolute",
+    top: 45,
+    right: 0,
+    zIndex: 10,
   },
   mainContent: {
     flex: 1,
@@ -211,7 +192,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   quoteContainer: {
-    backgroundColor: "transparent",
     padding: 24,
     borderRadius: 16,
     marginTop: "auto",
