@@ -1,41 +1,64 @@
-
 export const Colors = {
   light: {
-    text: '#4A4A4A', // Soft dark gray for text
-    background: '#FFFFFF', // Clean white background
-    tint: '#FFD166', // Warm yellow as primary tint
-    tabIconDefault: '#E0E0E0', // Light gray for inactive tabs
-    tabIconSelected: '#FFD166', // Yellow for selected tabs
-    secondaryText: '#8A8A8A', // Medium gray for secondary text
-    borderColor: '#F5F5F5', // Very light gray for borders
-    cardBackground: '#FFFCF5', // Very light yellow/cream for cards
-    // Category colors (softer, more pastel versions)
-    personalGrowth: '#FFAF87', // Soft peach
-    familyBonds: '#A6D0FF', // Light blue
-    friendship: '#FFB6D9', // Soft pink
-    communityImpact: '#A8E6CF', // Mint green
-    environmentalCare: '#C1E1A6', // Soft lime
-    compassion: '#DFC0EB', // Lavender
+    text: "#101210", // Black'ish for text
+    background: "#FFFFFF", // Clean white background
+    tint: "#E0B040", // Main yellow as primary tint
+    tabIconDefault: "#E7E7E0", // Light white for inactive tabs
+    tabIconSelected: "#E0B040", // Main yellow for selected tabs
+    secondaryText: "#8A8A8A", // Medium gray for secondary text
+    borderColor: "#E7E7E0", // Light white for borders
+    // cardBackground: "#FFF2C4", // Brighter yellow background for cards
+    cardBackground: "#ffd248", // Brighter yellow background for cards
+    // Category colors (incorporating bee theme)
+    personalGrowth: "#E0B040", // Main yellow
+    familyBonds: "#C88F50", // Dark yellow brown
+    friendship: "#E9B5A0", // Light pink
+    communityImpact: "#E7E7E0", // Light white
+    environmentalCare: "#E0B040", // Main yellow
+    compassion: "#E9B5A0", // Light pink
   },
   dark: {
-    text: '#333333', // Dark gray text for better contrast on light backgrounds
-    background: '#FFF8E1', // Very light cream/yellow background
-    tint: '#F9A825', // Slightly darker yellow tint
-    tabIconDefault: '#999999', // Medium gray for inactive tabs
-    tabIconSelected: '#F9A825', // Matching tint color for selected tabs
-    secondaryText: '#666666', // Darker gray for secondary text
-    borderColor: '#FFE082', // Light yellow borders
-    cardBackground: '#FFFDF7', // Very light cream card background
-    // Category colors (same as light mode for consistency)
-    personalGrowth: '#FFAF87', // Soft peach
-    familyBonds: '#A6D0FF', // Light blue
-    friendship: '#FFB6D9', // Soft pink
-    communityImpact: '#A8E6CF', // Mint green
-    environmentalCare: '#C1E1A6', // Soft lime
-    compassion: '#DFC0EB', // Lavender
+    text: "#E7E7E0", // Light white text for contrast on dark backgrounds
+    background: "#101210", // Black'ish background
+    tint: "#E0B040", // Main yellow tint
+    tabIconDefault: "#8A8A8A", // Medium gray for inactive tabs
+    tabIconSelected: "#E0B040", // Main yellow for selected tabs
+    secondaryText: "#C0C0C0", // Light gray for secondary text
+    borderColor: "#C88F50", // Dark yellow brown borders
+    cardBackground: "#1A1A1A", // Dark gray card background
+    // Category colors (same core colors but adjusted for dark mode)
+    personalGrowth: "#E0B040", // Main yellow
+    familyBonds: "#C88F50", // Dark yellow brown
+    friendship: "#E9B5A0", // Light pink
+    communityImpact: "#E7E7E0", // Light white
+    environmentalCare: "#E0B040", // Main yellow
+    compassion: "#E9B5A0", // Light pink
+  },
+  gradients: {
+    primary: {
+      colors: ["#FFF8DE", "#F7DC8D", "#FFF8DE"], // Soft pink gradient
+      start: { x: 0, y: 0 },
+      end: { x: 0, y: 1 },
+    },
+    warm: {
+      colors: ["#FFE5D6", "#FFD6C7", "#FFC7B8"], // Warm peachy gradient
+      start: { x: 0, y: 0 },
+      end: { x: 0, y: 1 },
+    },
+    honey: {
+      colors: ["#E0B040", "#C88F50", "#E9B5A0"], // Yellow to pink transition
+      start: { x: 0, y: 0 },
+      end: { x: 1, y: 1 },
+    },
   },
 };
 
 export default Colors;
 
 export type ColorName = keyof typeof Colors.light & keyof typeof Colors.dark;
+
+// light white: #E7E7E0
+// light pink #E9B5A0
+// main yellow #E0B040
+// dark yellow brown #C88F50
+// black'ish #101210

@@ -1,100 +1,111 @@
-import { StyleSheet, View } from 'react-native';
-import { BeeThemedView } from '@/components/BeeThemedView';
-import { BeeThemedText } from '@/components/BeeThemedText';
-import { useState } from 'react';
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { Pressable } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Pressable,
+  Animated,
+  SafeAreaView,
+} from "react-native";
+import { BeeThemedView } from "@/components/BeeThemedView";
+import { BeeThemedText } from "@/components/BeeThemedText";
+import { useState } from "react";
+import Colors from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 // Mock data for good deed
 const TODAYS_DEED = {
-  id: '1',
-  title: 'Compliment someone today',
-  category: 'compassion',
+  id: "1",
+  title: "Call mom today, let her know I love her",
+  category: "general",
   completed: false,
 };
 
 export default function DailyDeedsScreen() {
   const colorScheme = useColorScheme();
   const [deed, setDeed] = useState(TODAYS_DEED);
-  const [streak, setStreak] = useState(3); // Example streak value
+  const [streak, setStreak] = useState(3);
 
   // Toggle completion status for deed
   const toggleDeedCompletion = () => {
-    setDeed({...deed, completed: !deed.completed});
+    setDeed({ ...deed, completed: !deed.completed });
   };
 
   // Get category color
   const getCategoryColor = (category: string) => {
-    return Colors[colorScheme ?? 'light'][category as keyof typeof Colors.light] || '#F6B93B';
+    return (
+      Colors[colorScheme ?? "light"][category as keyof typeof Colors.light] ||
+      "#F6B93B"
+    );
   };
 
   return (
     <BeeThemedView style={styles.container}>
-      <View style={styles.header}>
-        <BeeThemedText type="title" style={{color: '#333'}}>Daily Good</BeeThemedText>
-        <BeeThemedText type="subtitle" style={[styles.subtitle, {color: '#555'}]}>
-          Your little acts of kindness add up
-        </BeeThemedText>
-      </View>
-
-      {/* Streak Card */}
-      <View 
-        style={[
-          styles.streakCard,
-          {backgroundColor: Colors[colorScheme ?? 'light'].cardBackground}
-        ]}
-      >
-        <FontAwesome5 
-          name="fire" 
-          size={32} 
-          color={Colors[colorScheme ?? 'light'].tint} 
-        />
-        <View style={styles.streakContent}>
-          <BeeThemedText type="defaultSemiBold" style={[styles.streakValue, {color: '#333'}]}>{streak}</BeeThemedText>
-          <BeeThemedText type="secondary" style={{color: '#555'}}>Day Streak</BeeThemedText>
-        </View>
-      </View>
-
-      {/* Today's Deed Card */}
-      <BeeThemedText type="subtitle" style={[styles.todaysLabel, {color: '#333'}]}>Today's Suggested Good Deed</BeeThemedText>
-
-      <Pressable 
-        style={[
-          styles.deedCard,
-          {backgroundColor: Colors[colorScheme ?? 'light'].cardBackground}
-        ]}
-        onPress={toggleDeedCompletion}
-      >
-        <View style={styles.deedMain}>
-          <View style={[styles.categoryIndicator, { backgroundColor: getCategoryColor(deed.category) }]} />
-          <View style={styles.deedContent}>
-            <BeeThemedText type="defaultSemiBold" style={[styles.deedTitle, {color: '#333'}]}>{deed.title}</BeeThemedText>
-            <BeeThemedText type="secondary" style={{color: '#555'}}>
-              {deed.completed ? "Completed today" : "Tap to mark as complete"}
+      <SafeAreaView style={styles.container}>
+        {/* Header with Crown and Streak */}
+        <View style={styles.header}>
+          <View style={styles.streakContainer}>
+            <BeeThemedText type="secondary" style={styles.streakText}>
+              ✨ {streak} day streak
             </BeeThemedText>
           </View>
+          <FontAwesome5
+            name="crown"
+            size={24}
+            color={Colors[colorScheme ?? "light"].tint}
+          />
         </View>
-        <Pressable
-          style={[
-            styles.checkbox,
-            deed.completed && { backgroundColor: Colors[colorScheme ?? 'light'].tint }
-          ]}
-          onPress={toggleDeedCompletion}
-        >
-          {deed.completed && (
-            <FontAwesome5 name="check" size={16} color="#FFFFFF" />
-          )}
-        </Pressable>
-      </Pressable>
 
-      {/* Additional content */}
-      <View style={styles.inspiration}>
-        <BeeThemedText type="secondary" style={[styles.inspirationText, {color: '#555'}]}>
-          "The smallest act of kindness is worth more than the grandest intention."
-        </BeeThemedText>
-      </View>
+        {/* Main Deed Content */}
+        <View style={styles.mainContent}>
+          <View style={styles.deedContainer}>
+            <View style={styles.categoryPill}>
+              <BeeThemedText type="secondary" style={styles.categoryText}>
+                {deed.category.charAt(0).toUpperCase() + deed.category.slice(1)}
+              </BeeThemedText>
+            </View>
+
+            <BeeThemedText type="title" style={styles.deedTitle}>
+              {deed.title}
+            </BeeThemedText>
+
+            {/* Action Buttons */}
+            <View style={styles.actionButtons}>
+              <Pressable
+                style={[
+                  styles.completeButton,
+                  deed.completed && styles.completedButton,
+                ]}
+                onPress={toggleDeedCompletion}
+              >
+                <BeeThemedText type="defaultSemiBold" style={styles.buttonText}>
+                  {deed.completed ? "Completed!" : "Complete Deed"}
+                </BeeThemedText>
+              </Pressable>
+
+              <Pressable
+                onPress={() =>
+                  setDeed({
+                    ...TODAYS_DEED,
+                    title: "Help someone carry their groceries",
+                  })
+                }
+              >
+                <BeeThemedText type="secondary" style={styles.tryAnotherText}>
+                  Try Another
+                </BeeThemedText>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+
+        {/* Inspirational Quote */}
+        <View style={styles.quoteContainer}>
+          <BeeThemedText type="secondary" style={styles.quoteText}>
+            "The smallest act of kindness is worth more than the grandest
+            intention."
+          </BeeThemedText>
+        </View>
+      </SafeAreaView>
     </BeeThemedView>
   );
 }
@@ -105,81 +116,84 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    marginTop: 60,
-    marginBottom: 24,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 40,
+    paddingHorizontal: 16,
   },
-  subtitle: {
-    marginTop: 4,
-    opacity: 0.8,
+  streakContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  streakCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+  streakText: {
+    fontSize: 18,
+    opacity: 0.7,
   },
-  streakContent: {
-    marginLeft: 16,
-  },
-  streakValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  todaysLabel: {
-    marginBottom: 12,
-  },
-  deedCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  deedMain: {
-    flexDirection: 'row',
+  mainContent: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
-  categoryIndicator: {
-    width: 8,
-    height: '100%',
-    borderRadius: 4,
-    marginRight: 16,
+  deedContainer: {
+    width: "100%",
+    alignItems: "center",
+    marginVertical: -40, // This helps offset the spacing from header/footer
   },
-  deedContent: {
-    flex: 1,
+  categoryPill: {
+    backgroundColor: "rgba(246, 185, 59, 0.1)",
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginBottom: 24,
+  },
+  categoryText: {
+    color: "#F6B93B",
+    fontSize: 14,
   },
   deedTitle: {
-    fontSize: 18,
-    marginBottom: 6,
+    fontSize: 28,
+    textAlign: "center",
+    marginBottom: 40,
+    lineHeight: 36,
   },
-  checkbox: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 2,
-    borderColor: '#F6B93B',
-    alignItems: 'center',
-    justifyContent: 'center',
+  actionButtons: {
+    width: "100%",
+    alignItems: "center",
+    gap: 16,
   },
-  inspiration: {
-    marginTop: 'auto',
-    padding: 16,
-    alignItems: 'center',
+  completeButton: {
+    backgroundColor: "#F6B93B",
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    borderRadius: 25,
+    width: "100%",
+    alignItems: "center",
   },
-  inspirationText: {
-    fontStyle: 'italic',
-    textAlign: 'center',
-  }
+  completedButton: {
+    backgroundColor: "#4CAF50",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+  },
+  tryAnotherText: {
+    color: "#F6B93B",
+    fontSize: 16,
+  },
+  quoteContainer: {
+    backgroundColor: "rgba(246, 185, 59, 0.05)",
+    padding: 24,
+    borderRadius: 16,
+    marginTop: "auto",
+    marginBottom: 24,
+  },
+  quoteText: {
+    textAlign: "center",
+    fontStyle: "italic",
+    fontSize: 16,
+    lineHeight: 24,
+  },
 });
