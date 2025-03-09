@@ -27,7 +27,7 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
   // Get screen dimensions
   const screenWidth = Dimensions.get("window").width;
 
-  // Bee position and rotation
+  // First bee position and rotation
   const beePosition = {
     x: useSharedValue(screenWidth * 0.1),
     y: useSharedValue(height * 0.3),
@@ -35,11 +35,21 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
   const beeRotation = useSharedValue(0);
   const beeScale = useSharedValue(1);
 
-  // Wing flapping state
-  const wingPhase = useSharedValue(0);
+  // Second bee position and rotation
+  const bee2Position = {
+    x: useSharedValue(screenWidth * 0.8),
+    y: useSharedValue(height * 0.5),
+  };
+  const bee2Rotation = useSharedValue(0);
+  const bee2Scale = useSharedValue(1);
 
-  // Movement state
+  // Wing flapping state for both bees
+  const wingPhase = useSharedValue(0);
+  const wing2Phase = useSharedValue(0.5); // Start with offset phase for variety
+
+  // Movement state for both bees
   const [shouldMove, setShouldMove] = useState(true);
+  const [shouldMove2, setShouldMove2] = useState(true);
 
   // Trail effect state
   const [trailPositions, setTrailPositions] = useState<
@@ -48,6 +58,7 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
       y: number;
       opacity: number;
       scale: number;
+      bee: number; // Add bee identifier (1 or 2)
     }>
   >([]);
   const [trailUpdateTrigger, setTrailUpdateTrigger] = useState(0);
@@ -60,28 +71,44 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
       -1,
       true
     );
+
+    // Second bee wings with slight offset
+    wing2Phase.value = withRepeat(
+      withTiming(1, { duration: 320 / speedFactor, easing: Easing.linear }),
+      -1,
+      true
+    );
   }, [speedFactor]);
 
   // Update trail positions
   useEffect(() => {
     // Update trail positions
     const updateTrail = () => {
-      setTrailPositions((prev) =>
-        [
-          {
-            x: beePosition.x.value,
-            y: beePosition.y.value,
-            opacity: 1,
-            scale: 1,
-          },
-          ...prev.map((p) => ({
-            ...p,
-            opacity: p.opacity - 0.2,
-            scale: p.scale - 0.1,
-          })),
-        ]
-          .filter((p) => p.opacity > 0)
-          .slice(0, 5)
+      setTrailPositions(
+        (prev) =>
+          [
+            {
+              x: beePosition.x.value,
+              y: beePosition.y.value,
+              opacity: 1,
+              scale: 1,
+              bee: 1,
+            },
+            {
+              x: bee2Position.x.value,
+              y: bee2Position.y.value,
+              opacity: 1,
+              scale: 1,
+              bee: 2,
+            },
+            ...prev.map((p) => ({
+              ...p,
+              opacity: p.opacity - 0.2,
+              scale: p.scale - 0.1,
+            })),
+          ]
+            .filter((p) => p.opacity > 0)
+            .slice(0, 10) // Increased to accommodate both bees
       );
 
       // Trigger next update
@@ -96,7 +123,7 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
     return () => clearTimeout(timeoutId);
   }, [trailUpdateTrigger]);
 
-  // Create a simple random flight path
+  // Create a simple random flight path for first bee
   useEffect(() => {
     if (!shouldMove) return;
 
@@ -170,7 +197,81 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
     moveToRandomPosition();
   }, [speedFactor, onBeeVisitFlower, shouldMove]);
 
-  // Create animated styles
+  // Create a simple random flight path for second bee
+  useEffect(() => {
+    if (!shouldMove2) return;
+
+    const moveToRandomPosition = () => {
+      // Set movement state to false to prevent multiple movements
+      setShouldMove2(false);
+
+      // Trigger callback occasionally (less frequently than first bee)
+      if (Math.random() > 0.8 && onBeeVisitFlower) {
+        onBeeVisitFlower();
+      }
+
+      // Current position
+      const currentX = bee2Position.x.value;
+      const currentY = bee2Position.y.value;
+
+      // Generate random target within the garden
+      // Keep the bee within the flower bed area (lower 60% of height)
+      const targetX = Math.random() * screenWidth;
+      const targetY = height * 0.3 + Math.random() * (height * 0.5);
+
+      // Calculate flight duration based on distance
+      const distance = Math.sqrt(
+        Math.pow(targetX - currentX, 2) + Math.pow(targetY - currentY, 2)
+      );
+      // Slightly different speed for variety
+      const duration = (distance * 40) / speedFactor;
+
+      // Determine direction
+      const isMovingRight = targetX > currentX;
+      bee2Rotation.value = withTiming(isMovingRight ? -1 : 1, {
+        duration: 300,
+        easing: Easing.inOut(Easing.ease),
+      });
+
+      // Calculate pause duration - different timing for variety
+      const pauseDuration = 800 + Math.random() * 1800;
+
+      // Animate to the target
+      bee2Position.x.value = withTiming(
+        targetX,
+        {
+          duration: duration,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        },
+        () => {
+          // After reaching target, schedule the next movement after a delay
+          bee2Position.x.value = withDelay(
+            pauseDuration,
+            withTiming(bee2Position.x.value, { duration: 0 }, () => {
+              // Allow movement again
+              runOnJS(setShouldMove2)(true);
+            })
+          );
+        }
+      );
+
+      bee2Position.y.value = withTiming(targetY, {
+        duration: duration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      });
+
+      // Add slight bobbing motion
+      bee2Scale.value = withSequence(
+        withTiming(1.1, { duration: 300 }),
+        withTiming(0.9, { duration: 300 })
+      );
+    };
+
+    // Start the random movement
+    moveToRandomPosition();
+  }, [speedFactor, onBeeVisitFlower, shouldMove2]);
+
+  // Create animated styles for first bee
   const beeAnimatedStyle = useAnimatedStyle(() => ({
     position: "absolute",
     left: beePosition.x.value - 25,
@@ -178,6 +279,18 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
     transform: [
       { scaleX: beeRotation.value }, // -1 flips horizontally, 1 keeps normal
       { scale: beeScale.value },
+    ],
+    zIndex: 100,
+  }));
+
+  // Create animated styles for second bee
+  const bee2AnimatedStyle = useAnimatedStyle(() => ({
+    position: "absolute",
+    left: bee2Position.x.value - 25,
+    top: bee2Position.y.value - 25,
+    transform: [
+      { scaleX: bee2Rotation.value }, // -1 flips horizontally, 1 keeps normal
+      { scale: bee2Scale.value },
     ],
     zIndex: 100,
   }));
@@ -202,16 +315,33 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
               top: pos.y,
               opacity: pos.opacity,
               transform: [{ scale: pos.scale }],
+              backgroundColor:
+                pos.bee === 1
+                  ? "rgba(255, 220, 0, 0.6)"
+                  : "rgba(255, 200, 0, 0.6)",
             },
           ]}
         />
       ))}
 
-      {/* Render bee */}
+      {/* Render first bee */}
       <Animated.View style={beeAnimatedStyle}>
         <AnimatedImage
           source={
             wingPhase.value > 0.5
+              ? require("../assets/images/bee-wings-up.png")
+              : require("../assets/images/bee-wings-down.png")
+          }
+          style={styles.bee}
+          resizeMode="contain"
+        />
+      </Animated.View>
+
+      {/* Render second bee */}
+      <Animated.View style={bee2AnimatedStyle}>
+        <AnimatedImage
+          source={
+            wing2Phase.value > 0.5
               ? require("../assets/images/bee-wings-up.png")
               : require("../assets/images/bee-wings-down.png")
           }

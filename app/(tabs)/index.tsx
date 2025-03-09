@@ -14,6 +14,9 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import RandomFlyingBee from "@/components/RandomFlyingBee";
 import { router } from "expo-router";
 import BeeGardenAnimation from "@/components/BeeGardenAnimation";
+import ShakableHive from "@/components/ShakableHive";
+import * as Haptics from "expo-haptics";
+import DeedCompletionButton from "@/components/DeedCompletionButton";
 
 // Mock data for good deed
 const TODAYS_DEED = {
@@ -47,11 +50,10 @@ export default function DailyDeedsScreen() {
           pauseDuration={3000}
         /> */}
 
-        {/* Absolute positioned hive */}
-        <Image
+        {/* Absolute positioned hive with shake animation */}
+        <ShakableHive
           source={require("@/assets/images/hive.png")}
           style={styles.hiveIcon}
-          resizeMode="contain"
         />
 
         {/* Header with Streak only */}
@@ -69,53 +71,35 @@ export default function DailyDeedsScreen() {
         {/* Main Deed Content */}
         <View style={styles.mainContent}>
           <View style={styles.deedContainer}>
-            <View style={styles.categoryPill}>
-              <BeeThemedText type="secondary" style={styles.categoryText}>
-                {deed.category.charAt(0).toUpperCase() + deed.category.slice(1)}
-              </BeeThemedText>
-            </View>
-
             <BeeThemedText type="title" style={styles.deedTitle}>
               {deed.title}
             </BeeThemedText>
 
             {/* Action Buttons */}
             <View style={styles.actionButtons}>
-              <Pressable
-                style={[
-                  styles.completeButton,
-                  deed.completed && styles.completedButton,
-                ]}
+              <DeedCompletionButton
+                completed={deed.completed}
                 onPress={toggleDeedCompletion}
-              >
-                <BeeThemedText type="defaultSemiBold" style={styles.buttonText}>
-                  {deed.completed ? "Completed!" : "Complete Deed"}
-                </BeeThemedText>
-              </Pressable>
+              />
 
               <Pressable
-                onPress={() =>
+                onPress={() => {
+                  // Light haptic feedback for "Try Another"
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
                   setDeed({
                     ...TODAYS_DEED,
                     title: "Help someone carry their groceries",
-                  })
-                }
+                  });
+                }}
               >
-                <BeeThemedText type="secondary" style={styles.tryAnotherText}>
-                  Try Another
+                <BeeThemedText type="secondary">
+                  I want a different deed
                 </BeeThemedText>
               </Pressable>
             </View>
           </View>
         </View>
-
-        {/* Inspirational Quote */}
-        {/* <View style={styles.quoteContainer}>
-          <BeeThemedText type="secondary" style={styles.quoteText}>
-            "The smallest act of kindness is worth more than the grandest
-            intention."
-          </BeeThemedText>
-        </View> */}
 
         {/* Add the BeeGardenAnimation below the quote */}
         <View style={styles.gardenContainer}>
@@ -159,7 +143,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     position: "absolute",
-    top: 45,
     right: 0,
     zIndex: 10,
   },
@@ -174,17 +157,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: -40, // This helps offset the spacing from header/footer
   },
-  categoryPill: {
-    backgroundColor: "rgba(246, 185, 59, 0.1)",
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 20,
-    marginBottom: 24,
-  },
-  categoryText: {
-    color: "#F6B93B",
-    fontSize: 14,
-  },
+
   deedTitle: {
     fontSize: 28,
     textAlign: "center",
@@ -195,25 +168,6 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     gap: 16,
-  },
-  completeButton: {
-    backgroundColor: "#F6B93B",
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 25,
-    width: "100%",
-    alignItems: "center",
-  },
-  completedButton: {
-    backgroundColor: "#4CAF50",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-  },
-  tryAnotherText: {
-    color: "#F6B93B",
-    fontSize: 16,
   },
   quoteContainer: {
     padding: 24,
