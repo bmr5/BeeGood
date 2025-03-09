@@ -11,6 +11,13 @@ A mobile app that gamifies daily good deeds with personalized suggestions and st
 - Simple account creation (optional email/social login)
 - Engaging hybrid questionnaire flow with multiple-choice options and optional conversational AI:
 
+  - **Progress Visualization**: Animated bee character flying from flower to flower across the top of each screen, showing progression through onboarding
+
+    - Each completed screen causes the bee to fly to the next flower
+    - Flowers change color or bloom when reached
+    - Subtle honey trail connects completed flowers
+    - Current flower gently pulses to indicate active screen
+
   - **What Are You Looking to Improve?** (First Screen)
 
     - Multiple-choice selection with visual icons:
@@ -112,6 +119,7 @@ A mobile app that gamifies daily good deeds with personalized suggestions and st
   - Brief explanation of how the bee will evolve based on completed deeds
   - Simple name selection for the bee character
   - Option to chat briefly with the bee to establish rapport
+  - Celebration animation with bee doing a happy dance when character is named
 
 - **How Your Free Trial Works** (Feature Explanation Screen)
 
@@ -120,6 +128,7 @@ A mobile app that gamifies daily good deeds with personalized suggestions and st
   - Transparent pricing information for after trial period
   - Reassurance that no payment information is required for trial
   - Option to set a reminder for trial end date
+  - Bee character pointing to key information with animated wing gestures
 
 - **Home Screen Widget Preview** (Engagement Screen)
 
@@ -127,6 +136,7 @@ A mobile app that gamifies daily good deeds with personalized suggestions and st
   - Explanation of widget features (daily deed suggestion, streak counter)
   - Animation showing how the widget updates with progress
   - Highlight of how the widget provides easy access to daily deeds
+  - Bee character appearing in widget demonstration
 
 - **Add to Home Screen CTA** (Final Onboarding Screen)
   - Step-by-step instructions with visuals for adding widget to home screen
@@ -134,6 +144,7 @@ A mobile app that gamifies daily good deeds with personalized suggestions and st
   - Alternative "Remind Me Later" option
   - Brief explanation of benefits (quick access, visual reminders)
   - Celebration animation when widget is successfully added
+  - Bee character guiding users through the process with animated gestures
 
 ### 2. Good Deed System
 
