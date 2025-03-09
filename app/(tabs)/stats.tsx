@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, View, ScrollView, SafeAreaView } from "react-native";
 import { BeeThemedText } from "@/components/BeeThemedText";
 import { BeeThemedView } from "@/components/BeeThemedView";
+import { BeeCard } from "@/components/BeeCard";
 import Colors from "@/constants/Colors";
 
 export default function StatsScreen() {
@@ -26,11 +27,7 @@ export default function StatsScreen() {
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
         >
-          <BeeThemedText type="title" style={styles.header}>
-            Your Goodness Stats
-          </BeeThemedText>
-
-          <BeeThemedView style={styles.overallContainer}>
+          <BeeCard style={styles.overallContainer}>
             <BeeThemedText type="subtitle" style={styles.overallLabel}>
               Overall Goodness
             </BeeThemedText>
@@ -40,46 +37,49 @@ export default function StatsScreen() {
               </BeeThemedText>
             </View>
             <BeeThemedText style={styles.overallDescription}>
-              Keep up the great work with your daily good deeds!
+              Your rating is based on your daily good deeds, increasing your
+              rating over time.
             </BeeThemedText>
-          </BeeThemedView>
+          </BeeCard>
 
           <BeeThemedText type="subtitle" style={styles.categoryHeader}>
             Categories
           </BeeThemedText>
 
-          {stats.map((stat, index) => (
-            <BeeThemedView key={index} style={styles.statCard}>
-              <View style={styles.statHeader}>
-                <BeeThemedText
-                  type="defaultSemiBold"
-                  style={styles.categoryName}
-                >
-                  {stat.category}
-                </BeeThemedText>
-                <BeeThemedText style={styles.statValue}>
-                  {stat.value}
-                </BeeThemedText>
-              </View>
+          <View style={styles.gridContainer}>
+            {stats.map((stat, index) => (
+              <BeeCard key={index} style={styles.statCard}>
+                <View style={styles.statHeader}>
+                  <BeeThemedText
+                    type="defaultSemiBold"
+                    style={styles.categoryName}
+                  >
+                    {stat.category}
+                  </BeeThemedText>
+                  <BeeThemedText style={styles.statValue}>
+                    {stat.value}
+                  </BeeThemedText>
+                </View>
 
-              <View style={styles.progressBarBackground}>
-                <View
-                  style={[
-                    styles.progressBarFill,
-                    {
-                      width: `${stat.value}%`,
-                      backgroundColor:
-                        Colors.light[stat.color as keyof typeof Colors.light],
-                    },
-                  ]}
-                />
-              </View>
+                <View style={styles.progressBarBackground}>
+                  <View
+                    style={[
+                      styles.progressBarFill,
+                      {
+                        width: `${stat.value}%`,
+                        backgroundColor:
+                          Colors.light[stat.color as keyof typeof Colors.light],
+                      },
+                    ]}
+                  />
+                </View>
 
-              <BeeThemedText type="secondary" style={styles.statTip}>
-                {getTipForCategory(stat.category)}
-              </BeeThemedText>
-            </BeeThemedView>
-          ))}
+                <BeeThemedText type="secondary" style={styles.statTip}>
+                  {getTipForCategory(stat.category)}
+                </BeeThemedText>
+              </BeeCard>
+            ))}
+          </View>
         </ScrollView>
       </SafeAreaView>
     </BeeThemedView>
@@ -94,9 +94,9 @@ function getTipForCategory(category: string): string {
       return "Consider calling a family member you haven't spoken to recently.";
     case "Friendship":
       return "Reach out to a friend who might need support.";
-    case "Community Impact":
+    case "Community":
       return "Look for local volunteer opportunities.";
-    case "Environmental Care":
+    case "Environmental":
       return "Try reducing plastic usage this week.";
     case "Compassion":
       return "Small acts of kindness make a big difference!";
@@ -120,16 +120,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   overallContainer: {
-    backgroundColor: "#FFFCF5",
-    borderRadius: 15,
-    padding: 20,
     marginBottom: 24,
     alignItems: "center",
-    shadowColor: "#FFD166",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-    elevation: 3,
   },
   overallLabel: {
     marginBottom: 10,
@@ -155,16 +147,14 @@ const styles = StyleSheet.create({
   categoryHeader: {
     marginBottom: 15,
   },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
   statCard: {
-    backgroundColor: "#FFFCF5",
-    borderRadius: 12,
-    padding: 16,
+    width: "48%", // Just under 50% to account for spacing
     marginBottom: 16,
-    shadowColor: "#FFD166",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   statHeader: {
     flexDirection: "row",
@@ -174,10 +164,12 @@ const styles = StyleSheet.create({
   },
   categoryName: {
     fontSize: 16,
+    flexShrink: 1, // Allow text to shrink if needed
   },
   statValue: {
     fontSize: 20,
     fontWeight: "bold",
+    marginLeft: 8,
   },
   progressBarBackground: {
     height: 12,

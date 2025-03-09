@@ -8,7 +8,7 @@ export const Colors = {
     secondaryText: "#8A8A8A", // Medium gray for secondary text
     borderColor: "#E7E7E0", // Light white for borders
     // cardBackground: "#FFF2C4", // Brighter yellow background for cards
-    cardBackground: "#ffd248", // Brighter yellow background for cards
+    cardBackground: "#FFF8DE", // Brighter yellow background for cards
     // Category colors (incorporating bee theme)
     personalGrowth: "#E0B040", // Main yellow
     familyBonds: "#C88F50", // Dark yellow brown
