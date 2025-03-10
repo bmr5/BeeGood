@@ -318,7 +318,7 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
     <View style={[styles.container, { height }]}>
       {/* Render flower bed stretching across the component */}
       <Image
-        source={require("../assets/images/flower-bed.png")}
+        source={require("../../assets/images/flower-bed.png")}
         style={styles.flowerBed}
         resizeMode="stretch"
       />
@@ -347,12 +347,12 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
       <Animated.View style={beeAnimatedStyle}>
         <View style={styles.beeContainer}>
           <AnimatedImage
-            source={require("../assets/images/bee-wings-up.png")}
+            source={require("../../assets/images/bee-wings-up.png")}
             style={[styles.bee, wingAnimatedStyle]}
             resizeMode="contain"
           />
           <AnimatedImage
-            source={require("../assets/images/bee-wings-down.png")}
+            source={require("../../assets/images/bee-wings-down.png")}
             style={[styles.bee, wing2AnimatedStyle]}
             resizeMode="contain"
           />
@@ -363,12 +363,12 @@ const BeeGardenAnimation: React.FC<BeeGardenAnimationProps> = ({
       <Animated.View style={bee2AnimatedStyle}>
         <View style={styles.beeContainer}>
           <AnimatedImage
-            source={require("../assets/images/bee-wings-up.png")}
+            source={require("../../assets/images/bee-wings-up.png")}
             style={[styles.bee, wing3AnimatedStyle]}
             resizeMode="contain"
           />
           <AnimatedImage
-            source={require("../assets/images/bee-wings-down.png")}
+            source={require("../../assets/images/bee-wings-down.png")}
             style={[styles.bee, wing4AnimatedStyle]}
             resizeMode="contain"
           />

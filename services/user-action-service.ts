@@ -352,7 +352,8 @@ export const UserActionService = {
     // Count actions by category
     const categoryCounts: Record<string, number> = {};
     data.forEach((item) => {
-      const categoryId = item.action?.category_id;
+      const categoryId =
+        Array.isArray(item.action) && item.action[0]?.category_id;
       if (categoryId) {
         categoryCounts[categoryId] = (categoryCounts[categoryId] || 0) + 1;
       }

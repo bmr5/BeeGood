@@ -20,12 +20,16 @@ configureReanimatedLogger({
 });
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useUserStore } from "@/stores/useUserStore";
+import registerDeviceForDevelopment from "@/lib/registerDeviceForDevelopment";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const loadUser = useUserStore((state) => state.loadUser);
+
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -35,6 +39,15 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
+
+  // Initialize user store with a default user ID or the last saved user
+  useEffect(() => {
+    // You can replace "default-user-id" with your actual default user ID
+    // or retrieve it from AsyncStorage if you've saved it previously
+    loadUser("2e85705a-357b-44ae-a831-09c104a409ab").catch((error) => {
+      console.error("Failed to load initial user:", error);
+    });
+  }, [loadUser]);
 
   if (!loaded) {
     return null;

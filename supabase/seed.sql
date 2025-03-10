@@ -57,9 +57,9 @@ INSERT INTO actions (title, description, category_id, is_custom) VALUES
 ('Practice active listening', 'Have a conversation where you focus entirely on listening', 
   (SELECT id FROM categories WHERE name = 'Compassion'), FALSE);
 
--- Create a test user
-INSERT INTO users (email, username, full_name, onboarding_completed)
-VALUES ('test@example.com', 'testuser', 'Test User', TRUE);
+-- Create a test user with device_id
+INSERT INTO users (email, username, full_name, onboarding_completed, device_id)
+VALUES ('test@example.com', 'testuser', 'Test User', TRUE, 'test-device-123');
 
 -- Create user profile for test user
 INSERT INTO user_profiles (
