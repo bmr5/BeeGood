@@ -8,7 +8,6 @@ A mobile app that gamifies daily good deeds with personalized suggestions and st
 
 ### 1. User Onboarding
 
-- Simple account creation (optional email/social login)
 - Engaging hybrid questionnaire flow with multiple-choice options and optional conversational AI:
 
   - **Progress Visualization**: Animated bee character flying from flower to flower across the top of each screen, showing progression through onboarding
@@ -112,14 +111,6 @@ A mobile app that gamifies daily good deeds with personalized suggestions and st
     - Skip button prominently displayed
     - Reassurance about privacy and how this information will be used
     - LLM processes nuanced spiritual descriptions and suggests appropriate categories
-
-- Initial bee character introduction
-
-  - Default bee with welcome message
-  - Brief explanation of how the bee will evolve based on completed deeds
-  - Simple name selection for the bee character
-  - Option to chat briefly with the bee to establish rapport
-  - Celebration animation with bee doing a happy dance when character is named
 
 - **How Your Free Trial Works** (Feature Explanation Screen)
 
