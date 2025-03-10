@@ -26,229 +26,81 @@ Stores basic user information and (optional) authentication details.
 
 Stores detailed user preferences and information collected during onboarding.
 
-sql
-CREATE TABLE user_profiles (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-daily_schedule TEXT,
-living_situation TEXT,
-interests TEXT[],
-values TEXT[],
-available_time INTEGER, -- minutes per day
-created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+| Column               | Type                     | Constraints                             | Description                                            |
+| -------------------- | ------------------------ | --------------------------------------- | ------------------------------------------------------ |
+| id                   | UUID                     | PRIMARY KEY, DEFAULT uuid_generate_v4() | Unique identifier for each profile                     |
+| user_id              | UUID                     | REFERENCES users(id) ON DELETE CASCADE  | Reference to the user this profile belongs to          |
+| improvement_areas    | TEXT[]                   | NULL                                    | Areas user wants to improve (from first screen)        |
+| current_goals        | TEXT                     | NULL                                    | User's current goals (from second screen)              |
+| age_range            | TEXT                     | NULL                                    | User's age range (from third screen)                   |
+| interests            | TEXT[]                   | NULL                                    | User's interests (from fourth screen)                  |
+| values               | TEXT[]                   | NULL                                    | User's core values (from fourth screen)                |
+| living_situation     | TEXT                     | NULL                                    | User's living arrangement (from fifth screen)          |
+| daily_schedule       | TEXT                     | NULL                                    | User's activity pattern (from sixth screen)            |
+| work_schedule        | TEXT                     | NULL                                    | User's work pattern (from sixth screen)                |
+| available_time       | TEXT                     | NULL                                    | Time available for deeds (from seventh screen)         |
+| available_minutes    | INTEGER                  | NULL                                    | Approximate minutes available per day                  |
+| spiritual_background | TEXT                     | NULL                                    | Optional religious/spiritual info (from eighth screen) |
+| created_at           | TIMESTAMP WITH TIME ZONE | DEFAULT NOW()                           | When the profile was created                           |
+| updated_at           | TIMESTAMP WITH TIME ZONE | DEFAULT NOW()                           | When the profile was last updated                      |
 
 ### 3. categories
 
 Defines the six core goodness categories for deeds.
 
-sql
-CREATE TABLE categories (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-name TEXT NOT NULL UNIQUE,
-description TEXT,
-color TEXT NOT NULL,
-icon TEXT,
-created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+| Column      | Type                     | Constraints                             | Description                         |
+| ----------- | ------------------------ | --------------------------------------- | ----------------------------------- |
+| id          | UUID                     | PRIMARY KEY, DEFAULT uuid_generate_v4() | Unique identifier for each category |
+| name        | TEXT                     | NOT NULL, UNIQUE                        | Name of the category                |
+| description | TEXT                     | NULL                                    | Description of the category         |
+| color       | TEXT                     | NOT NULL                                | Color code for UI representation    |
+| icon        | TEXT                     | NULL                                    | Icon name for UI representation     |
+| created_at  | TIMESTAMP WITH TIME ZONE | DEFAULT NOW()                           | When the category was created       |
 
-### 4. deeds
+### 4. actions
 
-Stores all possible good deeds that can be suggested to users.
+Stores all possible positive actions that can be suggested to users.
 
-sql
-CREATE TABLE deeds (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-title TEXT NOT NULL,
-description TEXT,
-category_id UUID REFERENCES categories(id),
-difficulty_level TEXT CHECK (difficulty_level IN ('easy', 'medium', 'challenge')),
-created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-is_custom BOOLEAN DEFAULT FALSE
-);
+| Column          | Type                     | Constraints                             | Description                               |
+| --------------- | ------------------------ | --------------------------------------- | ----------------------------------------- |
+| id              | UUID                     | PRIMARY KEY, DEFAULT uuid_generate_v4() | Unique identifier for each action         |
+| title           | TEXT                     | NOT NULL                                | Title of the action                       |
+| description     | TEXT                     | NULL                                    | Description of the action                 |
+| category_id     | UUID                     | REFERENCES categories(id)               | Category this action belongs to           |
+| times_completed | INTEGER                  | DEFAULT 0                               | Number of times this action was completed |
+| times_skipped   | INTEGER                  | DEFAULT 0                               | Number of times this action was skipped   |
+| created_at      | TIMESTAMP WITH TIME ZONE | DEFAULT NOW()                           | When the action was created               |
+| is_custom       | BOOLEAN                  | DEFAULT FALSE                           | Whether this is a custom user action      |
 
-### 5. user_deeds
+### 5. user_actions
 
-Tracks which deeds are assigned to users and their completion status.
+Tracks which actions are assigned to users and their completion status.
 
-sql
-CREATE TABLE user_deeds (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-deed_id UUID REFERENCES deeds(id) ON DELETE CASCADE,
-completed BOOLEAN DEFAULT FALSE,
-completion_date TIMESTAMP WITH TIME ZONE,
-assigned_date DATE NOT NULL,
-notes TEXT,
-created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+| Column          | Type                     | Constraints                              | Description                                   |
+| --------------- | ------------------------ | ---------------------------------------- | --------------------------------------------- |
+| id              | UUID                     | PRIMARY KEY, DEFAULT uuid_generate_v4()  | Unique identifier for each user action record |
+| user_id         | UUID                     | REFERENCES users(id) ON DELETE CASCADE   | Reference to the user                         |
+| action_id       | UUID                     | REFERENCES actions(id) ON DELETE CASCADE | Reference to the action                       |
+| completed       | BOOLEAN                  | DEFAULT FALSE                            | Whether the action was completed              |
+| skipped         | BOOLEAN                  | DEFAULT FALSE                            | Whether the action was skipped                |
+| completion_date | TIMESTAMP WITH TIME ZONE | NULL                                     | When the action was completed                 |
+| assigned_date   | DATE                     | NOT NULL                                 | Date when the action was assigned             |
+| notes           | TEXT                     | NULL                                     | User's notes about completing the action      |
+| created_at      | TIMESTAMP WITH TIME ZONE | DEFAULT NOW()                            | When the record was created                   |
 
 ### 6. user_stats
 
 Tracks user progress in each goodness category.
 
-sql
-CREATE TABLE user_stats (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-category_id UUID REFERENCES categories(id) ON DELETE CASCADE,
-score INTEGER DEFAULT 0 CHECK (score >= 0 AND score <= 100),
-created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-UNIQUE(user_id, category_id)
-);
-
-### 7. achievements
-
-Defines achievements that users can unlock.
-
-sql
-CREATE TABLE achievements (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-name TEXT NOT NULL,
-description TEXT NOT NULL,
-icon TEXT,
-requirement_type TEXT NOT NULL, -- streak, category_score, total_deeds, etc.
-requirement_value INTEGER NOT NULL, -- threshold to unlock
-created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-### 8. user_achievements
-
-Tracks which achievements each user has unlocked.
-
-sql
-CREATE TABLE user_achievements (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-achievement_id UUID REFERENCES achievements(id) ON DELETE CASCADE,
-unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-UNIQUE(user_id, achievement_id)
-);
-
-### 9. bee_characters
-
-Stores information about each user's bee character and its evolution.
-
-sql
-CREATE TABLE bee_characters (
-id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-evolution_stage INTEGER DEFAULT 1 CHECK (evolution_stage BETWEEN 1 AND 3),
-customizations JSONB DEFAULT '{}'::JSONB,
-created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-## Initial Data
-
-### Categories
-
-sql
-INSERT INTO categories (name, description, color, icon) VALUES
-('Personal Growth', 'Deeds that help you grow as a person', '#E0B040', 'brain'),
-('Family Bonds', 'Deeds that strengthen family relationships', '#C88F50', 'home-heart'),
-('Friendship', 'Deeds that nurture friendships', '#E9B5A0', 'handshake'),
-('Community Impact', 'Deeds that benefit your community', '#E7E7E0', 'city'),
-('Environmental Care', 'Deeds that help the environment', '#E0B040', 'leaf'),
-('Compassion', 'Deeds that show kindness to others', '#E9B5A0', 'heart');
-
-## Views
-
-### user_stats_view
-
-Provides a comprehensive view of user stats across all categories.
-
-sql
-CREATE VIEW user_stats_view AS
-SELECT
-us.user_id,
-u.username,
-c.name as category_name,
-c.color as category_color,
-us.score,
-COUNT(ud.id) FILTER (WHERE ud.completed = TRUE) as completed_deeds_count
-FROM user_stats us
-JOIN users u ON us.user_id = u.id
-JOIN categories c ON us.category_id = c.id
-LEFT JOIN user_deeds ud ON ud.user_id = us.user_id AND ud.deed_id IN (
-SELECT id FROM deeds WHERE category_id = c.id
-)
-GROUP BY us.user_id, u.username, c.name, c.color, us.score;
-
-### daily_deed_suggestions
-
-Provides a view of all available deeds for suggestion to users.
-
-sql
-CREATE VIEW daily_deed_suggestions AS
-SELECT
-d.id,
-d.title,
-d.description,
-d.difficulty_level,
-c.name as category_name,
-c.color as category_color,
-c.icon as category_icon
-FROM deeds d
-JOIN categories c ON d.category_id = c.id
-WHERE d.is_custom = FALSE;
-
-## Functions
-
-### update_user_streak
-
-Updates a user's streak when they complete a deed.
-
-sql
-CREATE OR REPLACE FUNCTION update_user_streak()
-RETURNS TRIGGER AS $$
-BEGIN
--- If a deed was completed
-IF NEW.completed = TRUE AND OLD.completed = FALSE THEN
--- Update the user's last deed date
-UPDATE users
-SET last_deed_date = CURRENT_DATE
-WHERE id = NEW.user_id;
--- Check if this continues a streak
-UPDATE users
-SET streak_count = streak_count + 1
-WHERE id = NEW.user_id
-AND (last_deed_date = CURRENT_DATE - INTERVAL '1 day' OR last_deed_date = CURRENT_DATE);
-END IF;
-RETURN NEW;
-END;
-
-$$
-LANGUAGE plpgsql;
-CREATE TRIGGER update_streak_on_deed_completion
-AFTER UPDATE ON user_deeds
-FOR EACH ROW
-EXECUTE FUNCTION update_user_streak();
-
-
-### calculate_overall_goodness
-Calculates a user's overall goodness score based on their category scores.
-
-sql
-CREATE OR REPLACE FUNCTION calculate_overall_goodness(user_id UUID)
-RETURNS INTEGER AS
-$$
-
-DECLARE
-overall_score INTEGER;
-BEGIN
-SELECT ROUND(AVG(score))
-INTO overall_score
-FROM user_stats
-WHERE user_id = $1;
-RETURN overall_score;
-END;
-
-$$
-LANGUAGE plpgsql;
-
+| Column      | Type                     | Constraints                                    | Description                              |
+| ----------- | ------------------------ | ---------------------------------------------- | ---------------------------------------- |
+| id          | UUID                     | PRIMARY KEY, DEFAULT uuid_generate_v4()        | Unique identifier for each stat record   |
+| user_id     | UUID                     | REFERENCES users(id) ON DELETE CASCADE         | Reference to the user                    |
+| category_id | UUID                     | REFERENCES categories(id) ON DELETE CASCADE    | Reference to the category                |
+| score       | INTEGER                  | DEFAULT 0, CHECK (score >= 0 AND score <= 100) | User's score in this category (0-100)    |
+| created_at  | TIMESTAMP WITH TIME ZONE | DEFAULT NOW()                                  | When the record was created              |
+| updated_at  | TIMESTAMP WITH TIME ZONE | DEFAULT NOW()                                  | When the record was last updated         |
+|             |                          | UNIQUE(user_id, category_id)                   | Ensures one record per user per category |
 
 ## Relationships
 
@@ -257,17 +109,3 @@ LANGUAGE plpgsql;
 - Users can unlock multiple achievements
 - Each deed belongs to one category
 - User stats are tracked per category per user
-
-## Data Flow
-
-1. During onboarding, a user profile is created
-2. Based on profile, daily deeds are suggested and assigned
-3. When deeds are completed:
-   - User stats are updated
-   - Streaks are calculated
-   - Achievements may be unlocked
-   - Bee character may evolve
-4. Stats view provides data for the stats screen and sharing
-
-This database design supports all core MVP features while allowing for future expansion.
-$$
