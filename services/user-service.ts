@@ -215,4 +215,24 @@ export const UserService = {
 
     return data;
   },
+
+  /**
+   * Get a user by device ID
+   * @param deviceId Device ID
+   * @returns User object or null if not found
+   */
+  async getByDeviceId(deviceId: string): Promise<User | null> {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("device_id", deviceId)
+      .single();
+
+    if (error) {
+      console.error("Error fetching user by device ID:", error);
+      return null;
+    }
+
+    return data;
+  },
 };

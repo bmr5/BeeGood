@@ -57,11 +57,13 @@ INSERT INTO actions (title, description, category_id, is_custom) VALUES
 ('Practice active listening', 'Have a conversation where you focus entirely on listening', 
   (SELECT id FROM categories WHERE name = 'Compassion'), FALSE);
 
--- Create a test user with device_id
+-- Create test users with device_ids
 INSERT INTO users (email, username, full_name, onboarding_completed, device_id)
-VALUES ('test@example.com', 'testuser', 'Test User', TRUE, 'test-device-123');
+VALUES 
+('ben@BeeGood.com', 'ben', 'Ben', TRUE, 'ben-device-123'),
+('nick@BeeGood.com', 'nick', 'Nick', TRUE, 'nick-device-789');
 
--- Create user profile for test user
+-- Create user profiles for test users
 INSERT INTO user_profiles (
     user_id,
     improvement_areas,
@@ -76,8 +78,8 @@ INSERT INTO user_profiles (
     available_minutes,
     spiritual_background
 )
-VALUES (
-    (SELECT id FROM users WHERE email = 'test@example.com'),
+SELECT 
+    id,
     ARRAY['Mental wellbeing', 'Relationships'],
     'Reduce stress and connect more with others',
     '25-34',
@@ -89,21 +91,25 @@ VALUES (
     'Short breaks (10-20 minutes)',
     15,
     'Spiritual but not religious'
-);
+FROM users
+WHERE email IN ('ben@BeeGood.com', 'nick@BeeGood.com');
 
--- Initialize user stats for test user
+-- Initialize user stats for test users
 INSERT INTO user_stats (user_id, category_id, score)
 SELECT 
-    (SELECT id FROM users WHERE email = 'test@example.com'),
-    id,
+    u.id,
+    c.id,
     10 -- Starting score
-FROM categories;
+FROM users u
+CROSS JOIN categories c
+WHERE u.email IN ('ben@BeeGood.com', 'nick@BeeGood.com');
 
--- Assign some actions to test user
+-- Assign some actions to test users
 INSERT INTO user_actions (user_id, action_id, assigned_date)
 SELECT 
-    (SELECT id FROM users WHERE email = 'test@example.com'),
-    id,
+    u.id,
+    a.id,
     CURRENT_DATE
-FROM actions
-LIMIT 3;
+FROM users u
+CROSS JOIN (SELECT id FROM actions LIMIT 3) a
+WHERE u.email IN ('ben@BeeGood.com', 'nick@BeeGood.com');

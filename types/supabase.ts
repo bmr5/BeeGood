@@ -7,31 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          operationName?: string
-          query?: string
-          variables?: Json
-          extensions?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       actions: {
@@ -109,6 +84,7 @@ export type Database = {
           completed: boolean | null
           completion_date: string | null
           created_at: string | null
+          device_id: string | null
           id: string
           notes: string | null
           skipped: boolean | null
@@ -120,6 +96,7 @@ export type Database = {
           completed?: boolean | null
           completion_date?: string | null
           created_at?: string | null
+          device_id?: string | null
           id?: string
           notes?: string | null
           skipped?: boolean | null
@@ -131,6 +108,7 @@ export type Database = {
           completed?: boolean | null
           completion_date?: string | null
           created_at?: string | null
+          device_id?: string | null
           id?: string
           notes?: string | null
           skipped?: boolean | null
@@ -261,10 +239,11 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string | null
+          device_id: string | null
           email: string | null
           full_name: string | null
           id: string
-          last_deed_date: string | null
+          last_action_date: string | null
           onboarding_completed: boolean | null
           preferences: Json | null
           streak_count: number | null
@@ -274,10 +253,11 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string | null
+          device_id?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
-          last_deed_date?: string | null
+          last_action_date?: string | null
           onboarding_completed?: boolean | null
           preferences?: Json | null
           streak_count?: number | null
@@ -287,10 +267,11 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string | null
+          device_id?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
-          last_deed_date?: string | null
+          last_action_date?: string | null
           onboarding_completed?: boolean | null
           preferences?: Json | null
           streak_count?: number | null
@@ -429,4 +410,3 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
-

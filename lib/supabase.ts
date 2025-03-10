@@ -5,6 +5,11 @@ const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  // global: {
+  //   headers: {
+  //     "x-device-id": "123",
+  //   },
+  // },
   auth: {
     storage: AsyncStorage,
     autoRefreshToken: true,
