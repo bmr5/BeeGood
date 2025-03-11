@@ -32,16 +32,13 @@ export const createSupabaseClient = async () => {
 
 // Helper function to get the initialized client
 export async function getSupabaseClient(): Promise<SupabaseClient> {
-  console.log("HERE: Getting supabase client");
   // Return existing client if already initialized
   if (initializedClient) {
-    console.log("HERE: Returning existing client");
     return initializedClient;
   }
 
   // If initialization is in progress, return the existing promise
   if (isInitializing && initializationPromise) {
-    console.log("HERE: Returning existing promise");
     return initializationPromise;
   }
 
@@ -49,7 +46,6 @@ export async function getSupabaseClient(): Promise<SupabaseClient> {
   isInitializing = true;
   initializationPromise = createSupabaseClient().then((client) => {
     initializedClient = client;
-    console.log("HERE: Initialized client:", initializedClient);
     updateSupabaseReference(client);
     isInitializing = false;
     return client;
@@ -73,5 +69,4 @@ export let supabase = createClient(supabaseUrl, supabaseAnonKey, {
 export function updateSupabaseReference(client: SupabaseClient) {
   // Replace the entire supabase object instead of using Object.assign
   supabase = client;
-  console.log("Supabase reference updated with device ID headers");
 }

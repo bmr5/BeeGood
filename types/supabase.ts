@@ -297,7 +297,28 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      belongs_to_current_device: {
+        Args: {
+          record_device_id: string
+        }
+        Returns: boolean
+      }
+      current_user_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_current_user_id: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      get_user_id_from_device_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      set_user_id_from_device_id: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

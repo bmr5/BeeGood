@@ -175,34 +175,6 @@ export const ActionService = {
   },
 
   /**
-   * Increment the completed count for an action
-   * @param id Action ID
-   * @returns Updated action or null if error
-   */
-  async incrementCompleted(id: string): Promise<Action | null> {
-    // First get the current count
-    const action = await this.getById(id);
-    if (!action) return null;
-
-    const timesCompleted = (action.times_completed || 0) + 1;
-
-    // Then update it
-    const { data, error } = await supabase
-      .from("actions")
-      .update({ times_completed: timesCompleted })
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error incrementing completed count:", error);
-      return null;
-    }
-
-    return data;
-  },
-
-  /**
    * Increment the skipped count for an action
    * @param id Action ID
    * @returns Updated action or null if error
@@ -300,5 +272,58 @@ export const ActionService = {
       action: action_data,
       userAction: user_action_data,
     };
+  },
+
+  /**
+   * Increment the completed count for an action
+   * @param id Action ID
+   * @returns Updated action or null if error
+   */
+  async incrementCompleted(id: string): Promise<Action | null> {
+    // First get the current count
+    const action = await this.getById(id);
+    if (!action) {
+      console.error(`Action with ID ${id} not found`);
+      return null;
+    }
+
+    const timesCompleted = (action.times_completed || 0) + 1;
+
+    // Then update it
+    const { data, error } = await supabase
+      .from("actions")
+      .update({ times_completed: timesCompleted })
+      .eq("id", id)
+      .select();
+
+    if (error) {
+      console.error("Error incrementing completed count:", error);
+      return null;
+    }
+
+    // Return the first item if data is an array, or null if empty
+    return data && data.length > 0 ? data[0] : null;
+  },
+
+  /**
+   * Decrement the completed count for an action
+   * @param id Action ID
+   * @returns Updated action or null if error
+   */
+  async decrementCompleted(id: string): Promise<Action | null> {
+    const { data, error } = await supabase
+      .from("actions")
+      .update({
+        times_completed: supabase.rpc("decrement", { x: 1 }),
+      })
+      .eq("id", id)
+      .select();
+
+    if (error) {
+      console.error("Error decrementing completed count:", error);
+      return null;
+    }
+
+    return data && data.length > 0 ? data[0] : null;
   },
 };

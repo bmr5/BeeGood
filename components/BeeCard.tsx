@@ -5,16 +5,14 @@ import Colors from "@/constants/Colors";
 
 export type BeeCardProps = ViewProps & {
   lightColor?: string;
-  darkColor?: string;
 };
 
 export function BeeCard(props: BeeCardProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
+  const { style, lightColor, ...otherProps } = props;
 
   const backgroundColor = useThemeColor(
     {
       light: lightColor || Colors.light.cardBackground,
-      dark: darkColor || Colors.dark.cardBackground,
     },
     "background"
   );

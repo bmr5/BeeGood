@@ -121,13 +121,13 @@ export const UserActionService = {
   },
 
   /**
-   * Get user actions for today with action details
+   * Get user action for today with action details
    * @param userId User ID
-   * @returns Array of today's user actions with details or empty array if error
+   * @returns Today's user action with details or null if not found or error
    */
-  async getTodaysActionsWithDetails(
+  async getTodaysActionWithDetails(
     userId: string
-  ): Promise<(UserAction & { action: any })[]> {
+  ): Promise<(UserAction & { action: any }) | null> {
     const today = new Date().toISOString().split("T")[0];
 
     const { data, error } = await supabase
@@ -139,11 +139,19 @@ export const UserActionService = {
       `
       )
       .eq("user_id", userId)
-      .eq("assigned_date", today);
+      .eq("assigned_date", today)
+      .limit(1)
+      .single();
 
     if (error) {
-      console.error("Error fetching today's actions with details:", error);
-      return [];
+      // If no rows match, return null instead of treating it as an error
+      if (error.code === "PGRST116") {
+        console.log("No action found for today");
+        return null;
+      }
+
+      console.error("Error fetching today's action with details:", error);
+      return null;
     }
 
     return data;
@@ -183,15 +191,14 @@ export const UserActionService = {
       .from("user_actions")
       .update(updates)
       .eq("id", id)
-      .select()
-      .single();
+      .select();
 
     if (error) {
       console.error("Error updating user action:", error);
       return null;
     }
 
-    return data;
+    return data && data.length > 0 ? data[0] : null;
   },
 
   /**
@@ -238,6 +245,37 @@ export const UserActionService = {
     const actionId = data.action_id;
     if (actionId) {
       await ActionService.incrementCompleted(actionId);
+    }
+
+    return data;
+  },
+
+  /**
+   * Mark a user action as uncompleted
+   * @param id User action ID
+   * @returns Updated user action or null if error
+   */
+  async markAsUncompleted(id: string): Promise<UserAction | null> {
+    const { data, error } = await supabase
+      .from("user_actions")
+      .update({
+        completed: false,
+        skipped: false,
+        completion_date: null,
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error marking action as uncompleted:", error);
+      return null;
+    }
+
+    // Use ActionService with null check
+    const actionId = data.action_id;
+    if (actionId) {
+      await ActionService.decrementCompleted(actionId);
     }
 
     return data;

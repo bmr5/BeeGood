@@ -70,6 +70,7 @@ export const useUserStore = create<UserState>()(
           set({ isLoading: true, error: null });
 
           const userData = await UserService.getById(userId);
+          console.log("userData", userData);
 
           if (userData) {
             try {

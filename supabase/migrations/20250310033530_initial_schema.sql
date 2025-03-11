@@ -13,7 +13,8 @@ CREATE TABLE users (
     preferences JSONB DEFAULT '{}',
     onboarding_completed BOOLEAN DEFAULT FALSE,
     streak_count INTEGER DEFAULT 0,
-    last_action_date DATE NULL
+    last_action_date DATE NULL,
+    timezone TEXT DEFAULT 'UTC'
 );
 
 -- Create user_profiles table

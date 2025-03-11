@@ -5,7 +5,6 @@ import Colors from "@/constants/Colors";
 
 export type ThemedProps = {
   lightColor?: string;
-  darkColor?: string;
   useGradient?: boolean;
   gradientType?: keyof typeof Colors.gradients;
 };
@@ -16,16 +15,12 @@ export function BeeThemedView(props: BeeThemedViewProps) {
   const {
     style,
     lightColor,
-    darkColor,
     useGradient = true,
     gradientType = "primary",
     ...otherProps
   } = props;
 
-  const backgroundColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    "background"
-  );
+  const backgroundColor = useThemeColor({ light: lightColor }, "background");
 
   if (useGradient) {
     const gradient = Colors.gradients[gradientType];

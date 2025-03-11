@@ -1,22 +1,12 @@
 import { StyleSheet, View, SafeAreaView, Text } from "react-native";
 import { BeeThemedView } from "@/components/BeeThemedView";
-import { useEffect } from "react";
 import BeeGardenAnimation from "@/components/home/BeeGardenAnimation";
 import ShakableHive from "@/components/home/ShakableHive";
 import StreakButton from "@/components/home/StreakButton";
 import { ActionDisplay } from "@/components/home/ActionDisplay";
-import { useUserStore } from "@/stores/useUserStore";
+import Colors from "@/constants/Colors";
 
 export default function DailyDeedsScreen() {
-  // Get user data and actions from the store
-  const { user, userProfile, isLoading, error } = useUserStore();
-
-  // Log user data when it changes
-  useEffect(() => {
-    console.log("Current user:", user);
-    console.log("User profile:", userProfile);
-  }, [user, userProfile]);
-
   return (
     <BeeThemedView style={styles.container}>
       <SafeAreaView style={styles.container}>
@@ -84,7 +74,7 @@ const styles = StyleSheet.create({
   },
   statusContainer: {
     padding: 10,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: Colors.light.background,
     borderRadius: 5,
     margin: 10,
     alignItems: "center",

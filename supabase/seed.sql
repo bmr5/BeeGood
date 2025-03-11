@@ -61,10 +61,10 @@ INSERT INTO actions (title, category_id, is_custom) VALUES
   (SELECT id FROM categories WHERE name = 'Compassion'), FALSE);
 
 -- Create test users with device_ids
-INSERT INTO users (email, username, full_name, onboarding_completed, device_id)
+INSERT INTO users (email, username, full_name, onboarding_completed, device_id, timezone)
 VALUES 
-('ben@BeeGood.com', 'ben', 'Ben', TRUE, 'ben-device-123'),
-('nick@BeeGood.com', 'nick', 'Nick', TRUE, 'nick-device-789');
+('ben@BeeGood.com', 'ben', 'Ben', TRUE, 'ben-device-123', 'America/Chicago'),
+('nick@BeeGood.com', 'nick', 'Nick', TRUE, 'nick-device-789', 'America/Los_Angeles');
 
 -- Create user profiles for test users
 INSERT INTO user_profiles (
@@ -107,12 +107,11 @@ FROM users u
 CROSS JOIN categories c
 WHERE u.email IN ('ben@BeeGood.com', 'nick@BeeGood.com');
 
--- Assign some actions to test users
+-- Assign just one action to each test user
 INSERT INTO user_actions (user_id, action_id, assigned_date)
 SELECT 
     u.id,
-    a.id,
+    (SELECT id FROM actions ORDER BY RANDOM() LIMIT 1),
     CURRENT_DATE
 FROM users u
-CROSS JOIN (SELECT id FROM actions LIMIT 3) a
 WHERE u.email IN ('ben@BeeGood.com', 'nick@BeeGood.com');
