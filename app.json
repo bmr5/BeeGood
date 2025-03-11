@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "BeeGood",
-    "slug": "BeeGood",
+    "slug": "beegood",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icons/splash-icon.png",
@@ -53,6 +53,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "d2fbfd8a-ca97-4db2-b4f4-5c91dab5f82d"
+      }
+    },
+    "owner": "benray887"
   }
 }
