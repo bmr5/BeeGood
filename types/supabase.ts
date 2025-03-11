@@ -13,7 +13,6 @@ export type Database = {
         Row: {
           category_id: string | null
           created_at: string | null
-          description: string | null
           id: string
           is_custom: boolean | null
           times_completed: number | null
@@ -23,7 +22,6 @@ export type Database = {
         Insert: {
           category_id?: string | null
           created_at?: string | null
-          description?: string | null
           id?: string
           is_custom?: boolean | null
           times_completed?: number | null
@@ -33,7 +31,6 @@ export type Database = {
         Update: {
           category_id?: string | null
           created_at?: string | null
-          description?: string | null
           id?: string
           is_custom?: boolean | null
           times_completed?: number | null
@@ -84,7 +81,6 @@ export type Database = {
           completed: boolean | null
           completion_date: string | null
           created_at: string | null
-          device_id: string | null
           id: string
           notes: string | null
           skipped: boolean | null
@@ -96,7 +92,6 @@ export type Database = {
           completed?: boolean | null
           completion_date?: string | null
           created_at?: string | null
-          device_id?: string | null
           id?: string
           notes?: string | null
           skipped?: boolean | null
@@ -108,7 +103,6 @@ export type Database = {
           completed?: boolean | null
           completion_date?: string | null
           created_at?: string | null
-          device_id?: string | null
           id?: string
           notes?: string | null
           skipped?: boolean | null

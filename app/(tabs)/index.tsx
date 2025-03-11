@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import BeeGardenAnimation from "@/components/home/BeeGardenAnimation";
 import ShakableHive from "@/components/home/ShakableHive";
 import StreakButton from "@/components/home/StreakButton";
-import DeedDisplay from "@/components/home/DeedDisplay";
+import { ActionDisplay } from "@/components/home/ActionDisplay";
 import { useUserStore } from "@/stores/useUserStore";
 
 export default function DailyDeedsScreen() {
@@ -33,7 +33,7 @@ export default function DailyDeedsScreen() {
 
         {/* Main Deed Content */}
         <View style={styles.mainContent}>
-          <DeedDisplay />
+          <ActionDisplay />
         </View>
 
         {/* Add the BeeGardenAnimation below the quote */}

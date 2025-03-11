@@ -3,13 +3,13 @@ import { Pressable, Animated, StyleSheet } from "react-native";
 import { BeeThemedText } from "@/components/BeeThemedText";
 import * as Haptics from "expo-haptics";
 
-interface DeedCompletionButtonProps {
+interface ActionCompletionButtonProps {
   completed: boolean;
   onPress: () => void;
   style?: object;
 }
 
-const DeedCompletionButton: React.FC<DeedCompletionButtonProps> = ({
+export const ActionCompletionButton: React.FC<ActionCompletionButtonProps> = ({
   completed,
   onPress,
   style,
@@ -85,5 +85,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-export default DeedCompletionButton;

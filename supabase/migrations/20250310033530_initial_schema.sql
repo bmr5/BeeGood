@@ -13,7 +13,7 @@ CREATE TABLE users (
     preferences JSONB DEFAULT '{}',
     onboarding_completed BOOLEAN DEFAULT FALSE,
     streak_count INTEGER DEFAULT 0,
-    last_deed_date DATE NULL
+    last_action_date DATE NULL
 );
 
 -- Create user_profiles table
@@ -49,7 +49,6 @@ CREATE TABLE categories (
 CREATE TABLE actions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title TEXT NOT NULL,
-    description TEXT NULL,
     category_id UUID REFERENCES categories(id),
     times_completed INTEGER DEFAULT 0,
     times_skipped INTEGER DEFAULT 0,
