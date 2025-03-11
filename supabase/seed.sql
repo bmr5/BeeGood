@@ -1,3 +1,6 @@
+-- Bypass RLS for seeding
+SET LOCAL rls.force_admin_role = TRUE;
+
 -- Seed data for categories
 INSERT INTO categories (name, description, color, icon) VALUES
 ('Personal Growth', 'Actions that help you grow as a person', '#E0B040', 'brain'),

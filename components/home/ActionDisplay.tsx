@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, ActivityIndicator } from "react-native";
+import { StyleSheet, View, Animated } from "react-native";
 import { BeeThemedText } from "@/components/BeeThemedText";
 import { ActionCompletionButton } from "./ActionCompletionButton";
 import TryAnotherButton from "@/components/home/TryAnotherButton";
@@ -18,6 +18,7 @@ export function ActionDisplay() {
   const [userActions, setUserActions] = useState<UserActionWithDetails[]>([]);
   const [currentActionIndex, setCurrentActionIndex] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [fadeAnim] = useState(new Animated.Value(0)); // Initial opacity: 0
   const user = useUserStore((state) => state.user);
 
   // Fetch user's actions
@@ -41,6 +42,13 @@ export function ActionDisplay() {
         console.error("Error fetching user actions:", error);
       } finally {
         setLoading(false);
+
+        // Start fade-in animation when loading completes
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }).start();
       }
     }
 
@@ -77,91 +85,102 @@ export function ActionDisplay() {
 
   // Handle try another action
   const tryAnotherAction = async () => {
-    // Reset completion state
-    setCompleted(false);
-
-    // If we have more actions in the array, move to the next one
-    if (currentActionIndex < userActions.length - 1) {
-      setCurrentActionIndex(currentActionIndex + 1);
-      setCompleted(userActions[currentActionIndex + 1].completed || false);
-    } else {
-      // If we're at the end, fetch more actions
+    // Fade out
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(async () => {
+      // Reset completion state
+      setCompleted(false);
       setLoading(true);
+
       try {
-        // Mark current action as skipped
-        if (currentUserAction?.id) {
-          await UserActionService.markAsSkipped(currentUserAction.id);
-        }
-
-        // Get more actions for the user
-        if (user?.id) {
-          // Call the API to assign new actions to the user
-          // This will be implemented on your server
-          const response = await fetch(
-            `https://api.beegood.app/users/${user.id}/actions/assign`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                count: 3, // Request 3 new actions
-              }),
+        // If we have more actions in the array, move to the next one
+        if (currentActionIndex < userActions.length - 1) {
+          setCurrentActionIndex(currentActionIndex + 1);
+          setCompleted(userActions[currentActionIndex + 1].completed || false);
+        } else {
+          // If we're at the end, fetch more actions
+          try {
+            // Mark current action as skipped
+            if (currentUserAction?.id) {
+              await UserActionService.markAsSkipped(currentUserAction.id);
             }
-          );
 
-          if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
+            // Get more actions for the user
+            if (user?.id) {
+              // Call the API to assign new actions to the user
+              const response = await fetch(
+                `https://api.beegood.app/users/${user.id}/actions/assign`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    count: 3, // Request 3 new actions
+                  }),
+                }
+              );
+
+              if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+              }
+
+              const data = await response.json();
+
+              if (data.userActions && data.userActions.length > 0) {
+                // Add new actions to the existing ones
+                setUserActions([...userActions, ...data.userActions]);
+
+                // Move to the first new action
+                setCurrentActionIndex(userActions.length);
+              } else {
+                console.log("No new actions available");
+              }
+            }
+          } catch (error) {
+            console.error("Error fetching more actions:", error);
+
+            // Fallback: If API call fails, just cycle back to the first action
+            if (userActions.length > 0) {
+              setCurrentActionIndex(0);
+              setCompleted(userActions[0].completed || false);
+            }
           }
-
-          const data = await response.json();
-
-          if (data.userActions && data.userActions.length > 0) {
-            // Add new actions to the existing ones
-            setUserActions([...userActions, ...data.userActions]);
-
-            // Move to the first new action
-            setCurrentActionIndex(userActions.length);
-          } else {
-            console.log("No new actions available");
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching more actions:", error);
-
-        // Fallback: If API call fails, just cycle back to the first action
-        if (userActions.length > 0) {
-          setCurrentActionIndex(0);
-          setCompleted(userActions[0].completed || false);
         }
       } finally {
         setLoading(false);
+
+        // Fade back in
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }).start();
       }
-    }
+    });
   };
 
-  // Show loading state
-  if (loading) {
-    return (
-      <View style={styles.actionContainer}>
-        <ActivityIndicator size="large" color={Colors.light.tint} />
-      </View>
-    );
+  // Show empty view while loading instead of activity indicator
+  if (loading && userActions.length === 0) {
+    return <View style={styles.actionContainer} />;
   }
 
   // Show a message if no actions are available
   if (userActions.length === 0 || !currentUserAction) {
     return (
-      <View style={styles.actionContainer}>
+      <Animated.View style={[styles.actionContainer, { opacity: fadeAnim }]}>
         <BeeThemedText type="title" style={styles.actionTitle}>
           No actions available right now.
         </BeeThemedText>
-      </View>
+      </Animated.View>
     );
   }
 
   return (
-    <View style={styles.actionContainer}>
+    <Animated.View style={[styles.actionContainer, { opacity: fadeAnim }]}>
       <BeeThemedText type="title" style={styles.actionTitle}>
         {currentUserAction.action?.title || "Oops, no actions available"}
       </BeeThemedText>
@@ -175,7 +194,7 @@ export function ActionDisplay() {
 
         <TryAnotherButton onPress={tryAnotherAction} />
       </View>
-    </View>
+    </Animated.View>
   );
 }
 

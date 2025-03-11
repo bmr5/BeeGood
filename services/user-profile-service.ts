@@ -39,15 +39,19 @@ export const UserProfileService = {
     const { data, error } = await supabase
       .from("user_profiles")
       .select("*")
-      .eq("user_id", userId)
-      .single();
+      .eq("user_id", userId);
 
     if (error) {
-      console.error("Error fetching user profile by user ID:", error);
+      console.error("Error fetching user profile:", error);
+      throw error;
+    }
+
+    // Return null if no profile exists instead of throwing an error
+    if (!data || data.length === 0) {
       return null;
     }
 
-    return data;
+    return data[0];
   },
 
   /**

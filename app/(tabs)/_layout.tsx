@@ -43,6 +43,12 @@ export default function TabLayout() {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="test-session"
+        options={{
+          title: "Test Session",
+        }}
+      />
     </Tabs>
   );
 }
