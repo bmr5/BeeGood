@@ -8,7 +8,7 @@ import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
 } from "react-native-reanimated";
-import { Animated, View, StyleSheet, Platform } from "react-native";
+import { Animated, View, StyleSheet } from "react-native";
 
 // This is the default configuration
 configureReanimatedLogger({
@@ -23,7 +23,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import Colors from "@/constants/Colors";
 import { BeeThemedView } from "@/components/BeeThemedView";
-import Superwall from "@superwall/react-native-superwall";
 import { superwallService } from "@/services/superwall-service";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

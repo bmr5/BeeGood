@@ -1,7 +1,7 @@
 export const Colors = {
   light: {
     text: "#101210", // Black'ish for text
-    background: "#FFFFFF", // Clean white background
+    background: "#FFF8DE", // Clean white background
     tint: "#E0B040", // Main yellow as primary tint
     tabIconDefault: "#E7E7E0", // Light white for inactive tabs
     tabIconSelected: "#E0B040", // Main yellow for selected tabs
