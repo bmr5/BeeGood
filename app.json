@@ -28,7 +28,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#FFF8E1"
-      }
+      },
+      "package": "com.benray887.BeeGood"
     },
     "web": {
       "bundler": "metro",
@@ -58,12 +59,19 @@
           }
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "development"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
+      "oneSignalAppId": "888a19bd-a414-4dc4-b456-3ae47c8bad51",
       "router": {
         "origin": false
       },

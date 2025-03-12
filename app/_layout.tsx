@@ -8,6 +8,13 @@ import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
 } from "react-native-reanimated";
+
+// Configure logger before any other Reanimated imports or usage
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false, // Reanimated runs in strict mode by default
+});
+
 import { Animated, View, StyleSheet } from "react-native";
 import { PostHogProvider } from "posthog-react-native";
 import { useUserStore } from "@/stores/useUserStore";
@@ -17,11 +24,8 @@ import Constants from "expo-constants";
 import Colors from "@/constants/Colors";
 import { BeeThemedView } from "@/components/BeeThemedView";
 import { superwallService } from "@/services/superwall-service";
-
-configureReanimatedLogger({
-  level: ReanimatedLogLevel.warn,
-  strict: false, // Reanimated runs in strict mode by default
-});
+import { LogLevel, OneSignal } from "react-native-onesignal";
+import { useOneSignal } from "@/hooks/useOneSignal";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -41,6 +45,8 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
+  useOneSignal();
+
   // Single initialization flow
   useEffect(() => {
     const init = async () => {
@@ -58,6 +64,7 @@ export default function RootLayout() {
 
         superwallService.initialize();
 
+        // if (isDev) {
         // if (isDev) {
         //   console.log("clearing storage");
         //   await AsyncStorage.clear();
