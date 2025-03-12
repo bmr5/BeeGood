@@ -9,21 +9,20 @@ import {
   ReanimatedLogLevel,
 } from "react-native-reanimated";
 import { Animated, View, StyleSheet } from "react-native";
+import { PostHogProvider } from "posthog-react-native";
+import { useUserStore } from "@/stores/useUserStore";
+import { setupDeviceUser } from "@/lib/setupDeviceUser";
+import { getSupabaseClient } from "@/lib/supabase";
+import Constants from "expo-constants";
+import Colors from "@/constants/Colors";
+import { BeeThemedView } from "@/components/BeeThemedView";
+import { superwallService } from "@/services/superwall-service";
 
-// This is the default configuration
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
   strict: false, // Reanimated runs in strict mode by default
 });
 
-import { useUserStore } from "@/stores/useUserStore";
-import { setupDeviceUser } from "@/lib/setupDeviceUser";
-import { getSupabaseClient } from "@/lib/supabase";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Constants from "expo-constants";
-import Colors from "@/constants/Colors";
-import { BeeThemedView } from "@/components/BeeThemedView";
-import { superwallService } from "@/services/superwall-service";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -95,18 +94,49 @@ export default function RootLayout() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-        <ThemeProvider value={DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="onboarding" />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </Animated.View>
-    </View>
+    <PostHogProvider
+      apiKey="phc_sGZqLdDDWYFDwA1gYNTqgGLVSptJVYf17j7D8JsDsbB"
+      options={{
+        host: "https://us.i.posthog.com",
+
+        // check https://posthog.com/docs/session-replay/installation?tab=React+Native
+        // for more config and to learn about how we capture sessions on mobile
+        // and what to expect
+        enableSessionReplay: true,
+        sessionReplayConfig: {
+          // Whether text inputs are masked. Default is true.
+          // Password inputs are always masked regardless
+          maskAllTextInputs: true,
+          // Whether images are masked. Default is true.
+          maskAllImages: true,
+          // Capture logs automatically. Default is true.
+          // Android only (Native Logcat only)
+          captureLog: true,
+          // Whether network requests are captured in recordings. Default is true
+          // Only metric-like data like speed, size, and response code are captured.
+          // No data is captured from the request or response body.
+          // iOS only
+          captureNetworkTelemetry: true,
+          // Deboucer delay used to reduce the number of snapshots captured and reduce performance impact. Default is 500ms
+          androidDebouncerDelayMs: 500,
+          // Deboucer delay used to reduce the number of snapshots captured and reduce performance impact. Default is 1000ms
+          iOSdebouncerDelayMs: 1000,
+        },
+      }}
+    >
+      <View style={[styles.container, { backgroundColor }]}>
+        <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+          <ThemeProvider value={DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="onboarding" />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </Animated.View>
+      </View>
+    </PostHogProvider>
   );
 }
 

@@ -1,11 +1,33 @@
 import React from "react";
-import { View } from "react-native";
-import SessionTest from "@/components/SessionTest";
+import { View, ScrollView, StyleSheet } from "react-native";
+import SessionTest from "@/components/test/SessionTest";
+import PosthogTest from "@/components/test/PosthogTest";
 
 export default function TestSessionScreen() {
   return (
-    <View style={{ flex: 1 }}>
-      <SessionTest />
-    </View>
+    <ScrollView style={styles.container}>
+      <View style={styles.section}>
+        <SessionTest />
+      </View>
+
+      <View style={styles.divider} />
+
+      <View style={styles.section}>
+        <PosthogTest />
+      </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  section: {
+    padding: 10,
+  },
+  divider: {
+    height: 10,
+    backgroundColor: "#f0f0f0",
+  },
+});

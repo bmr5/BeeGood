@@ -223,6 +223,8 @@ PODS:
     - ExpoModulesCore
   - ExpoBlur (14.0.3):
     - ExpoModulesCore
+  - ExpoDevice (7.0.2):
+    - ExpoModulesCore
   - ExpoFileSystem (18.0.11):
     - ExpoModulesCore
   - ExpoFont (13.0.4):
@@ -236,6 +238,8 @@ PODS:
   - ExpoLinearGradient (14.0.2):
     - ExpoModulesCore
   - ExpoLinking (7.0.5):
+    - ExpoModulesCore
+  - ExpoLocalization (16.0.1):
     - ExpoModulesCore
   - ExpoModulesCore (2.2.2):
     - DoubleConversion
@@ -2113,6 +2117,7 @@ DEPENDENCIES:
   - expo-dev-menu-interface (from `../node_modules/expo-dev-menu-interface/ios`)
   - ExpoAsset (from `../node_modules/expo-asset/ios`)
   - ExpoBlur (from `../node_modules/expo-blur/ios`)
+  - ExpoDevice (from `../node_modules/expo-device/ios`)
   - ExpoFileSystem (from `../node_modules/expo-file-system/ios`)
   - ExpoFont (from `../node_modules/expo-font/ios`)
   - ExpoHaptics (from `../node_modules/expo-haptics/ios`)
@@ -2120,6 +2125,7 @@ DEPENDENCIES:
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../node_modules/expo-linear-gradient/ios`)
   - ExpoLinking (from `../node_modules/expo-linking/ios`)
+  - ExpoLocalization (from `../node_modules/expo-localization/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - ExpoSplashScreen (from `../node_modules/expo-splash-screen/ios`)
   - ExpoSymbols (from `../node_modules/expo-symbols/ios`)
@@ -2236,6 +2242,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-asset/ios"
   ExpoBlur:
     :path: "../node_modules/expo-blur/ios"
+  ExpoDevice:
+    :path: "../node_modules/expo-device/ios"
   ExpoFileSystem:
     :path: "../node_modules/expo-file-system/ios"
   ExpoFont:
@@ -2250,6 +2258,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-linear-gradient/ios"
   ExpoLinking:
     :path: "../node_modules/expo-linking/ios"
+  ExpoLocalization:
+    :path: "../node_modules/expo-localization/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core"
   ExpoSplashScreen:
@@ -2421,6 +2431,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 00dc42302a72722fdecec3fa048de84a9133bcc4
   ExpoAsset: a4cbc27a7cd24a6e87eb719603790b2cfa8dd326
   ExpoBlur: 567af66164e3043a9a30069594aed1ddf0a88d97
+  ExpoDevice: 82da2577196c2ddee18189da65f754ea83003d2e
   ExpoFileSystem: 4d2e7f77a41cfde8c3ae98580d872cd49437f993
   ExpoFont: 773955186469acc5108ff569712a2d243857475f
   ExpoHaptics: e01cce0741d68c281853118eb0267f88d42c6b7a
@@ -2428,6 +2439,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 2a5f15dd4964cba8002c9a36676319a3394c85c7
   ExpoLinearGradient: ee9efc5acb988b911320e964fab9b4cbdeb198c4
   ExpoLinking: 0381341519ca7180a3a057d20edb1cf6a908aaf4
+  ExpoLocalization: e36b911e04d371c6c6624ef818e56229bf51c498
   ExpoModulesCore: 561a787bc626ab9bcfee2a688bd588bf2667405f
   ExpoSplashScreen: 643666b96a84e8d97d55fac43926fb4183c692d9
   ExpoSymbols: b9f255ce49868d46a73f30e12859efeb8117bcad
