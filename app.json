@@ -13,9 +13,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#FFF8E1"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "icon": {
@@ -47,6 +45,14 @@
           "dark": {
             "image": "./assets/icons/splash-icon.png",
             "backgroundColor": "#101210"
+          }
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
           }
         }
       ]

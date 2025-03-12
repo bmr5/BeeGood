@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { superwallService } from "@/services/superwall-service";
+import Superwall from "@superwall/react-native-superwall";
 
 export default function SessionTest() {
   const [sessionInfo, setSessionInfo] = useState<any>(null);
@@ -9,6 +11,7 @@ export default function SessionTest() {
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [unauthorizedTest, setUnauthorizedTest] = useState<any>(null);
   const [unauthorizedLoading, setUnauthorizedLoading] = useState(false);
+  const [superwallLoading, setSuperwallLoading] = useState(false);
 
   // Load the current device ID
   useEffect(() => {
@@ -71,6 +74,27 @@ export default function SessionTest() {
     }
   };
 
+  // Test Superwall paywall
+  const testSuperwall = async () => {
+    setSuperwallLoading(true);
+    try {
+      await superwallService.presentPaywall(
+        "campaign_trigger",
+        () => {
+          console.log("Feature access granted!");
+          // This code runs if user has access to the feature
+        },
+        {
+          hasIntroductoryOffer: true,
+        }
+      );
+    } catch (e) {
+      console.error("Exception testing Superwall:", e);
+    } finally {
+      setSuperwallLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Session Test</Text>
@@ -118,6 +142,16 @@ export default function SessionTest() {
           </Text>
         </View>
       )}
+
+      <View style={styles.separator} />
+
+      <Text style={styles.subtitle}>Superwall Test</Text>
+      <Button
+        title={superwallLoading ? "Loading..." : "Test Superwall Paywall"}
+        onPress={testSuperwall}
+        disabled={superwallLoading}
+        color="#4287f5" // Blue color for Superwall test
+      />
     </View>
   );
 }
