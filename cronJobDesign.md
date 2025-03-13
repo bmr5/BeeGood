@@ -61,3 +61,102 @@ Creating a historical table structure from the beginning offers significant adva
    ```
 
 This aggressive archiving strategy maximizes performance of the active table while maintaining a complete historical record. It's particularly well-suited for applications where users primarily interact with the current day's content.
+
+## Notification System Implementation
+
+### Edge Function Architecture
+
+The notification system will be implemented using a Supabase Edge Function with the following components:
+
+1. **Hourly Notification Edge Function**
+
+   - Called by a cron job every hour during morning hours (e.g., 6am-12pm)
+   - Processes users in batches based on timezone and notification preferences
+   - Securely interfaces with OneSignal API without exposing credentials
+
+2. **Implementation Flow**
+
+   ```
+   - Query users where:
+     * Current local time is their preferred notification time (default: 10am)
+     * They have an active user_action for today
+     * They haven't been notified yet today
+     * Notifications are enabled for their account
+   - For each eligible user:
+     * Retrieve their current day's action details
+     * Craft personalized notification title and message
+     * Send notification via OneSignal REST API
+     * Mark the user_action as notified
+   ```
+
+3. **OneSignal Integration**
+
+   - Edge function will securely store OneSignal API credentials
+   - Notification payload will include:
+     - Title: "Your Daily Good Deed"
+     - Message: The specific action text (e.g., "Help someone carry groceries")
+     - Deep link: Direct to the action detail screen in the app
+   - Batch notifications when possible for efficiency
+
+4. **Timezone Handling**
+   - Store user timezone preferences in user profile
+   - Calculate local time for each user during processing
+   - Default to 10am local time if no preference is specified
+
+### Sample Edge Function Pseudocode
+
+```javascript
+// Hourly notification processor
+async function processNotifications() {
+  // Get current UTC time
+  const now = new Date();
+
+  // Find users where current hour matches their notification hour in their timezone
+  const eligibleUsers = await supabase
+    .from("users")
+    .select(
+      `
+      id, 
+      external_id,
+      timezone,
+      user_actions!inner(id, action_text, notified)
+    `
+    )
+    .eq("notification_enabled", true)
+    .eq("user_actions.assigned_date", new Date().toISOString().split("T")[0])
+    .eq("user_actions.notified", false)
+    .filter("timezone_hour(timezone) = ?", [now.getUTCHours()]);
+
+  // Process eligible users
+  for (const user of eligibleUsers) {
+    // Craft notification
+    const notificationPayload = {
+      app_id: process.env.ONESIGNAL_APP_ID,
+      include_external_user_ids: [user.external_id],
+      headings: { en: "Your Daily Good Deed" },
+      contents: { en: user.user_actions[0].action_text },
+      url: `app://beegood/actions/${user.user_actions[0].id}`,
+    };
+
+    // Send to OneSignal
+    await fetch("https://onesignal.com/api/v1/notifications", {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${process.env.ONESIGNAL_REST_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(notificationPayload),
+    });
+
+    // Mark as notified
+    await supabase
+      .from("user_actions")
+      .update({ notified: true })
+      .eq("id", user.user_actions[0].id);
+  }
+
+  return { processed: eligibleUsers.length };
+}
+```
+
+0 6-12 \* \* \*
