@@ -1,5 +1,5 @@
 {
-  "name": "expo-on-replit",
+  "name": "bee-good",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -11,7 +11,10 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "db-reset": "npx supabase db reset --linked",
-    "gen-types": "npx supabase gen types typescript --project-id wlxtpzfevukhlatriydd --schema public > types/supabase.ts"
+    "gen-types": "npx supabase gen types typescript --project-id wlxtpzfevukhlatriydd --schema public > types/supabase.ts",
+    "start-local-function-server": "npx supabase functions serve",
+    "deploy-functions": "npx supabase functions deploy",
+    "set-supabase-env": "npx supabase secrets set --env-file .env.local"
   },
   "jest": {
     "preset": "jest-expo"
