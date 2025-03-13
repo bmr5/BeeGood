@@ -2,7 +2,7 @@ import React from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import SessionTest from "@/components/test/SessionTest";
 import PosthogTest from "@/components/test/PosthogTest";
-
+import { OneSignalTest } from "@/components/test/OneSignalTest";
 export default function TestSessionScreen() {
   return (
     <ScrollView style={styles.container}>
@@ -14,6 +14,12 @@ export default function TestSessionScreen() {
 
       <View style={styles.section}>
         <PosthogTest />
+      </View>
+
+      <View style={styles.divider} />
+
+      <View style={styles.section}>
+        <OneSignalTest />
       </View>
     </ScrollView>
   );

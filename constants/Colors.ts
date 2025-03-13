@@ -1,11 +1,11 @@
 export const Colors = {
   light: {
-    text: "#101210", // Black'ish for text
+    text: "#2f3a4b", // Black'ish for text
     background: "#FFF8DE", // Clean white background
     tint: "#E0B040", // Main yellow as primary tint
     tabIconDefault: "#E7E7E0", // Light white for inactive tabs
     tabIconSelected: "#E0B040", // Main yellow for selected tabs
-    secondaryText: "#8A8A8A", // Medium gray for secondary text
+    secondaryText: "#64748e", // Medium gray for secondary text
     borderColor: "#E7E7E0", // Light white for borders
     cardBackground: "#FFF8DE", // Brighter yellow background for cards
     // Category colors (incorporating bee theme)

@@ -7,6 +7,7 @@ import {
   UserProfileService,
 } from "@/services/user-profile-service";
 import { setupDeviceUser } from "@/lib/setupDeviceUser";
+import { identifyUserInOneSignal } from "@/lib/identifyUserInOneSignal";
 
 interface UserState {
   // State
@@ -49,6 +50,8 @@ export const useUserStore = create<UserState>()(
           if (userData) {
             // Load the full user data including profile
             await get().loadUser(userData.id);
+            // Identify the user in OneSignal
+            identifyUserInOneSignal(deviceId);
           } else {
             set({ error: "Failed to find user for this device" });
           }
