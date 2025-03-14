@@ -10,8 +10,7 @@
     "npm:@supabase/realtime-js@2.11.2": "2.11.2",
     "npm:@supabase/storage-js@2.7.1": "2.7.1",
     "npm:@types/node@*": "22.12.0",
-    "npm:date-fns-tz@2.0.0": "2.0.0_date-fns@2.30.0",
-    "npm:date-fns@2.30.0": "2.30.0",
+    "npm:luxon@^3.5.0": "3.5.0",
     "npm:openai@^4.52.5": "4.87.3"
   },
   "jsr": {
@@ -34,12 +33,6 @@
     }
   },
   "npm": {
-    "@babel/runtime@7.26.10": {
-      "integrity": "sha512-2WJMeRQPHKSPemqk/awGrAiuFfzBmOIPXKizAsVhWH9YJqLZ0H+HS4c8loHGgW6utJ3E/ejXQUsiGaQy2NZ9Fw==",
-      "dependencies": [
-        "regenerator-runtime"
-      ]
-    },
     "@supabase/auth-js@2.68.0": {
       "integrity": "sha512-odG7nb7aOmZPUXk6SwL2JchSsn36Ppx11i2yWMIc/meUO2B2HK9YwZHPK06utD9Ql9ke7JKDbwGin/8prHKxxQ==",
       "dependencies": [
@@ -133,18 +126,6 @@
       "integrity": "sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==",
       "dependencies": [
         "delayed-stream"
-      ]
-    },
-    "date-fns-tz@2.0.0_date-fns@2.30.0": {
-      "integrity": "sha512-OAtcLdB9vxSXTWHdT8b398ARImVwQMyjfYGkKD2zaGpHseG2UPHbHjXELReErZFxWdSLph3c2zOaaTyHfOhERQ==",
-      "dependencies": [
-        "date-fns"
-      ]
-    },
-    "date-fns@2.30.0": {
-      "integrity": "sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==",
-      "dependencies": [
-        "@babel/runtime"
       ]
     },
     "delayed-stream@1.0.0": {
@@ -250,6 +231,9 @@
         "ms"
       ]
     },
+    "luxon@3.5.0": {
+      "integrity": "sha512-rh+Zjr6DNfUYR3bPwJEnuwDdqMbxZW7LOQfUN4B54+Cl+0o5zaU9RJ6bcidfDtC1cWCZXQ+nvX8bf6bAji37QQ=="
+    },
     "math-intrinsics@1.1.0": {
       "integrity": "sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g=="
     },
@@ -286,9 +270,6 @@
         "node-fetch"
       ]
     },
-    "regenerator-runtime@0.14.1": {
-      "integrity": "sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw=="
-    },
     "tr46@0.0.3": {
       "integrity": "sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw=="
     },
@@ -318,8 +299,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@supabase/supabase-js@2",
-      "npm:date-fns-tz@2.0.0",
-      "npm:date-fns@2.30.0"
+      "npm:luxon@^3.5.0"
     ]
   }
 }

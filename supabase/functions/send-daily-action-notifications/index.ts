@@ -5,6 +5,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { DateTime } from "luxon";
 
 // Create a Supabase client with the auth context of the function
 const supabaseClient = createClient(
@@ -89,7 +90,7 @@ async function markActionAsNotified(userId: string, actionId: string) {
   // Update preferences to include notification status
   const preferences = userData.preferences || {};
   const notifiedActions = preferences.notifiedActions || {};
-  notifiedActions[actionId] = new Date().toISOString();
+  notifiedActions[actionId] = DateTime.utc().toISO();
   preferences.notifiedActions = notifiedActions;
 
   // Update the user record
@@ -114,17 +115,20 @@ async function processNotifications({
   testUserId = null,
 } = {}) {
   // Get current UTC time (or use test hour)
-  const now = new Date();
-  const currentHour = testHour !== null ? testHour : now.getUTCHours();
-  const today = now.toISOString().split("T")[0];
+  const now = DateTime.utc();
+  const currentHour = testHour !== null ? testHour : now.hour;
+  const today = now.toFormat("yyyy-MM-dd");
 
   // Format current time in various timezones for debugging
   const formatTimeInTimezone = (timezone: string) => {
-    return now.toLocaleString("en-US", {
-      timeZone: timezone,
-      dateStyle: "full",
-      timeStyle: "long",
-    });
+    try {
+      return now
+        .setZone(timezone)
+        .toFormat("EEEE, MMMM d, yyyy h:mm:ss a ZZZZ");
+    } catch (e) {
+      console.error(`Error formatting time in timezone ${timezone}:`, e);
+      return now.toFormat("EEEE, MMMM d, yyyy h:mm:ss a ZZZZ");
+    }
   };
 
   // Log basic execution information
@@ -188,24 +192,24 @@ ${testUserId ? `Target user: ${testUserId}` : "Processing all eligible users"}
       // If in test mode, skip time-of-day checks
       if (testMode) return true;
 
-      // Normal timezone logic...
+      // Improved timezone handling with Luxon
       if (user.timezone) {
-        // Simple approach: assume timezone offset is between -12 and +14
-        // and we want to send notifications between 8am and 10am local time
         try {
-          const timezoneOffset =
-            parseInt(user.timezone.replace(/[^-\d]/g, "")) || 0;
-          const userLocalHour = (now.getUTCHours() + timezoneOffset + 24) % 24;
-          return userLocalHour >= 8 && userLocalHour <= 10;
+          // Get the current hour in the user's timezone
+          const userLocalTime = now.setZone(user.timezone);
+          const userLocalHour = userLocalTime.hour;
+
+          // Send notifications between 9am and 11am in user's local time
+          return userLocalHour >= 9 && userLocalHour <= 11;
         } catch (e) {
-          console.error(`Error parsing timezone for user ${user.id}:`, e);
-          // Default to UTC time window if timezone parsing fails
-          return now.getUTCHours() >= 8 && now.getUTCHours() <= 10;
+          console.error(`Error handling timezone for user ${user.id}:`, e);
+          // Default to UTC time window if timezone handling fails
+          return currentHour >= 9 && currentHour <= 11;
         }
       }
 
-      // Default: send notifications between 8am and 10am UTC
-      return now.getUTCHours() >= 8 && now.getUTCHours() <= 10;
+      // Default: send notifications between 9am and 11am UTC
+      return currentHour >= 9 && currentHour <= 11;
     }) || [];
 
   console.log(`Found ${usersToNotify.length} users to notify this hour`);
