@@ -42,9 +42,9 @@ default_pool_size = 20
 # Maximum number of client connections allowed.
 max_client_conn = 100
 
-# [db.vault]
-# SUPABASE_URL = "env(SUPABASE_URL)"
-# SUPABASE_ANON_KEY = "env(SUPABASE_ANON_KEY)"
+[db.vault]
+supabase_url = "env(supabase_url)"
+supabase_anon_key = "env(supabase_anon_key)"
 
 [db.migrations]
 # Specifies an ordered list of schema files that describe your database.

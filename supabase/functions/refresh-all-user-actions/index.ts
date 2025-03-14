@@ -7,10 +7,6 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 console.log("Starting refresh-all-user-actions function");
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-console.log("SUPABASE_URL", SUPABASE_URL);
-console.log("SUPABASE_SERVICE_ROLE_KEY", SUPABASE_SERVICE_ROLE_KEY);
 const BATCH_SIZE = 50; // Adjust based on your user count and performance testing
 
 // Define types for our results
