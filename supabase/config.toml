@@ -43,7 +43,8 @@ default_pool_size = 20
 max_client_conn = 100
 
 # [db.vault]
-# secret_key = "env(SECRET_VALUE)"
+# SUPABASE_URL = "env(SUPABASE_URL)"
+# SUPABASE_ANON_KEY = "env(SUPABASE_ANON_KEY)"
 
 [db.migrations]
 # Specifies an ordered list of schema files that describe your database.
