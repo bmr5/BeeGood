@@ -1,3 +1,4 @@
+import { supabase } from "@/lib/supabase";
 import { useOneSignalStore } from "@/stores/useOneSignalStore";
 import { useUserStore } from "@/stores/useUserStore";
 import { Ionicons } from "@expo/vector-icons";
@@ -47,39 +48,30 @@ export const OneSignalTest = () => {
       }
 
       try {
-        const url = "https://api.onesignal.com/notifications";
-        const options = {
-          method: "POST",
-          headers: {
-            Authorization: `Key ${process.env.EXPO_PUBLIC_ONESIGNAL_REST_API_KEY}`,
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({
-            app_id: process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID,
-            contents: {
-              en: "This is a test notification from the OneSignal Test component!",
+        const { data, error } = await supabase.functions.invoke(
+          "send-notification",
+          {
+            body: {
+              contents: {
+                en: "This is a test notification from the OneSignal Test component!",
+              },
+              headings: {
+                en: "Test Notification",
+              },
+              target_channel: "push",
+              include_aliases: {
+                external_id: [user.device_id],
+              },
             },
-            headings: {
-              en: "Test Notification",
-            },
-            target_channel: "push",
-            include_aliases: {
-              external_id: [user.device_id],
-            },
-          }),
-        };
+          }
+        );
 
-        const response = await fetch(url, options);
-        const responseData = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            responseData.errors?.[0] || "OneSignal API returned an error"
-          );
+        if (error) {
+          throw new Error(error.message);
         }
 
         addToHistory(
-          `OneSignal notification sent successfully. ID: ${responseData.id}`
+          `OneSignal notification sent successfully. ID: ${data.recipients}`
         );
         Alert.alert(
           "Success",

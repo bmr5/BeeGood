@@ -12,9 +12,9 @@
     "lint": "expo lint",
     "db-reset": "npx supabase db reset --linked",
     "gen-types": "npx supabase gen types typescript --project-id wlxtpzfevukhlatriydd --schema public > types/supabase.ts",
-    "start-local-function-server": "npx supabase functions serve",
+    "run-functions-locally": "npx supabase functions serve --env-file ./supabase/.env.local",
     "deploy-functions": "npx supabase functions deploy",
-    "set-supabase-env": "npx supabase secrets set --env-file .env.local"
+    "set-supabase-env": "npx supabase secrets set --env-file ./supabase/.env"
   },
   "jest": {
     "preset": "jest-expo"

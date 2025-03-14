@@ -125,6 +125,60 @@ export type Database = {
           },
         ]
       }
+      user_actions_history: {
+        Row: {
+          action_id: string | null
+          archived_at: string | null
+          assigned_date: string
+          completed: boolean | null
+          completion_date: string | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          skipped: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          action_id?: string | null
+          archived_at?: string | null
+          assigned_date: string
+          completed?: boolean | null
+          completion_date?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          skipped?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          action_id?: string | null
+          archived_at?: string | null
+          assigned_date?: string
+          completed?: boolean | null
+          completion_date?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          skipped?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_actions_history_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "actions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_actions_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_profiles: {
         Row: {
           age_range: string | null
@@ -241,6 +295,7 @@ export type Database = {
           onboarding_completed: boolean | null
           preferences: Json | null
           streak_count: number | null
+          timezone: string | null
           updated_at: string | null
           username: string | null
         }
@@ -255,6 +310,7 @@ export type Database = {
           onboarding_completed?: boolean | null
           preferences?: Json | null
           streak_count?: number | null
+          timezone?: string | null
           updated_at?: string | null
           username?: string | null
         }
@@ -269,6 +325,7 @@ export type Database = {
           onboarding_completed?: boolean | null
           preferences?: Json | null
           streak_count?: number | null
+          timezone?: string | null
           updated_at?: string | null
           username?: string | null
         }
