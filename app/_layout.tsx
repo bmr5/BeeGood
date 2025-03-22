@@ -8,6 +8,7 @@ import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
 } from "react-native-reanimated";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Configure logger before any other Reanimated imports or usage
 configureReanimatedLogger({
@@ -26,6 +27,7 @@ import { BeeThemedView } from "@/components/BeeThemedView";
 import { superwallService } from "@/services/superwall-service";
 import { LogLevel, OneSignal } from "react-native-onesignal";
 import { useOneSignal } from "@/hooks/useOneSignal";
+import OnboardingScreen from "./(onboarding)/onboarding";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -135,9 +137,17 @@ export default function RootLayout() {
         <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
           <ThemeProvider value={DefaultTheme}>
             <Stack>
+              {/* Root and group screens */}
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(onboarding)" />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="onboarding" />
-              <Stack.Screen name="+not-found" />
+
+              {/* Onboarding flow screens */}
+              <Stack.Screen name="onboarding-age" />
+              <Stack.Screen name="onboarding-living" />
+              <Stack.Screen name="onboarding-how-it-works" />
+              <Stack.Screen name="onboarding-schedule" />
+              <Stack.Screen name="onboarding-goals" />
             </Stack>
             <StatusBar style="auto" />
           </ThemeProvider>

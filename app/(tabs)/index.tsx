@@ -10,22 +10,19 @@ export default function DailyDeedsScreen() {
   return (
     <BeeThemedView style={styles.container}>
       <SafeAreaView style={styles.container}>
-        {/* Absolute positioned hive with shake animation */}
+        Absolute positioned hive with shake animation
         <ShakableHive
           source={require("@/assets/images/hive.png")}
           style={styles.hiveIcon}
         />
-
         {/* Header with Streak and user name if available */}
         <View style={styles.header}>
           <StreakButton />
         </View>
-
         {/* Main Deed Content */}
         <View style={styles.mainContent}>
           <ActionDisplay />
         </View>
-
         {/* Add the BeeGardenAnimation below the quote */}
         <View style={styles.gardenContainer}>
           <BeeGardenAnimation
